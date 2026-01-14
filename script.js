@@ -1,169 +1,112 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const startOverlay = document.getElementById('start-overlay');
-    // Preload âm thanh click để đảm bảo không bị trễ
-    const clickSound = document.getElementById('sound-click');
-    clickSound.load();
+// Cấu hình Passcode
+const SECRET_PASS = "CT011002"; 
 
-    startOverlay.addEventListener('click', () => {
-        startOverlay.style.display = 'none';
-        runCountdownSequence();
+// Biến âm thanh
+let beepSound, themeSound;
+
+document.addEventListener('DOMContentLoaded', () => {
+    beepSound = document.getElementById('sound-beep');
+    themeSound = document.getElementById('sound-theme');
+    
+    // Xử lý sự kiện nhấn Enter khi nhập pass
+    document.getElementById('pass-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            checkPass();
+        }
     });
 });
 
-function runCountdownSequence() {
-    const countdownScreen = document.getElementById('countdown-screen');
-    const countdownElement = document.getElementById('countdown-number');
-    const beepSound = document.getElementById('sound-beep');
+// --- BƯỚC 1: KIỂM TRA PASSWORD ---
+function checkPass() {
+    const inputVal = document.getElementById('pass-input').value;
+    const errorMsg = document.getElementById('error-msg');
+    const passScreen = document.getElementById('password-screen');
+    const startOverlay = document.getElementById('start-overlay');
 
+    if (inputVal === SECRET_PASS) {
+        // Pass đúng -> Ẩn màn hình pass, hiện màn hình Start
+        passScreen.style.display = 'none';
+        startOverlay.style.display = 'flex';
+        
+        // Gán sự kiện click cho màn hình Start
+        startOverlay.addEventListener('click', startSequence);
+    } else {
+        // Pass sai
+        errorMsg.style.display = 'block';
+        // Hiệu ứng rung lắc nhẹ
+        passScreen.querySelector('.pass-box').animate([
+            { transform: 'translateX(0)' },
+            { transform: 'translateX(-10px)' },
+            { transform: 'translateX(10px)' },
+            { transform: 'translateX(0)' }
+        ], { duration: 300 });
+    }
+}
+
+// --- BƯỚC 2: BẮT ĐẦU CHUỖI SỰ KIỆN ---
+function startSequence() {
+    const startOverlay = document.getElementById('start-overlay');
+    const countdownScreen = document.getElementById('countdown-screen');
+    
+    // Ẩn nút start, hiện màn đếm ngược
+    startOverlay.style.display = 'none';
     countdownScreen.style.display = 'flex';
 
-    const playTick = () => {
-        beepSound.pause();
+    // Bật nhạc nền nhẹ
+    themeSound.volume = 0.5;
+    themeSound.play().catch(e => console.log("Chưa tương tác user"));
+
+    runCountdown();
+}
+
+// --- BƯỚC 3: LOGIC ĐẾM NGƯỢC + VÒNG TRÒN ---
+function runCountdown() {
+    let count = 5;
+    const numberEl = document.getElementById('countdown-number');
+    const circleEl = document.querySelector('.circle-run');
+    
+    // Hàm chạy mỗi giây
+    const tick = () => {
+        // Cập nhật số
+        numberEl.textContent = count;
+        
+        // Reset animation vòng tròn (để nó chạy lại từ đầu mỗi giây)
+        circleEl.classList.remove('animate-circle');
+        void circleEl.offsetWidth; // Trigger reflow (hack để reset animation CSS)
+        circleEl.classList.add('animate-circle');
+
+        // Phát tiếng beep
         beepSound.currentTime = 0;
-        beepSound.play().catch(e => console.log("Lỗi âm thanh:", e));
+        beepSound.play();
+
+        count--;
+
+        if (count < 0) {
+            clearInterval(timer);
+            finishCountdown();
+        }
     };
 
-    let count = 5;
-
-    // Nhịp đầu tiên (Số 5)
-    countdownElement.textContent = count;
-    playTick();
-
-    const interval = setInterval(() => {
-        count--;
-        
-        if (count > 0) {
-            countdownElement.textContent = count;
-            playTick(); 
-        } 
-        else if (count === 0) {
-            countdownElement.textContent = count;
-            
-            // Ngắt tiếng beep ngay lập tức
-            beepSound.pause(); 
-            beepSound.currentTime = 0;
-            
-            clearInterval(interval);
-            
-            setTimeout(() => {
-                transitionToIntro();
-            }, 1000);
-        }
-    }, 1000);
+    // Chạy ngay nhịp đầu tiên
+    tick();
+    
+    // Lặp lại mỗi 1 giây
+    const timer = setInterval(tick, 1000);
 }
 
-function transitionToIntro() {
+// --- BƯỚC 4: KẾT THÚC ĐẾM NGƯỢC -> HIỆN CONTENT ---
+function finishCountdown() {
     const countdownScreen = document.getElementById('countdown-screen');
-    const introScreen = document.getElementById('intro-screen');
-    const cuteMusic = document.getElementById('sound-cute');
-    const dialogueBox = document.querySelector('.dialogue-box');
-    const dialogueText = document.getElementById('dialogue-text');
+    const contentScreen = document.getElementById('content-screen');
+    const video = document.getElementById('main-video');
 
     countdownScreen.style.display = 'none';
-    introScreen.style.display = 'flex';
+    contentScreen.style.display = 'flex'; // Hiện khung video
 
-    cuteMusic.volume = 0.5;
-    cuteMusic.currentTime = 0;
-    cuteMusic.play();
+    // Tắt nhạc nền đếm ngược (nếu muốn), hoặc để nó chạy tiếp
+    themeSound.pause(); 
 
-    setTimeout(() => {
-        introScreen.classList.add('start-animations');
-        
-        // Kịch bản Lời thoại
-        setTimeout(() => {
-            // Thoại 1 (Thêm dấu !)
-            dialogueText.innerHTML = "Chào Sandwich GM, mình là Gwen!";
-            dialogueBox.classList.add('show'); 
-
-            setTimeout(() => {
-                dialogueBox.classList.remove('show'); 
-
-                setTimeout(() => {
-                    // Thoại 2 (Thêm dấu !)
-                    dialogueText.innerHTML = "Hãy đến nhận lấy chiếc cúp của mình đi nào,<br>bạn <span class='highlight'>Sandwich GM</span> dễ thương ơi!";
-                    dialogueBox.classList.add('show'); 
-                }, 500);
-
-            }, 3000); 
-
-        }, 1500); 
-
-    }, 100);
-}
-
-function openGift() {
-    // Lấy âm thanh
-    const clickSound = document.getElementById('sound-click');
-    const cuteMusic = document.getElementById('sound-cute');
-    
-    // --- FIX QUAN TRỌNG: CLICK SOUND ---
-    // Đặt lại thời gian về 0 và phát ngay lập tức ở dòng đầu tiên của hàm
-    clickSound.currentTime = 0;
-    clickSound.play();
-    
-    // Giảm nhạc nền
-    cuteMusic.pause();
-
-    const intro = document.getElementById('intro-screen');
-    const content = document.getElementById('content-screen');
-    const whiteOverlay = document.getElementById('white-overlay');
-    const trollContainer = document.getElementById('troll-container');
-    const video = document.getElementById('gojo-video');
-
-    whiteOverlay.style.opacity = '1';
-
-    setTimeout(() => {
-        trollContainer.style.display = 'flex';
-        
-        setTimeout(() => {
-            intro.style.display = 'none';
-            trollContainer.style.display = 'none';
-            content.style.display = 'flex';
-            whiteOverlay.style.opacity = '0';
-            
-            video.play();
-            // Kích hoạt hàm theo dõi phụ đề
-            handleVideoSubtitles(video);
-
-            setTimeout(() => {
-                whiteOverlay.style.display = 'none';
-            }, 500);
-
-        }, 3500); 
-
-    }, 500); 
-}
-
-// --- HÀM XỬ LÝ PHỤ ĐỀ VIDEO (MỚI) ---
-function handleVideoSubtitles(video) {
-    const subtitleDiv = document.getElementById('video-subtitles');
-    
-    // BẠN CẦN CHỈNH SỐ GIÂY Ở ĐÂY CHO KHỚP VỚI VIDEO CỦA BẠN
-    const subtitles = [
-        { 
-            start: 3.5, // Bắt đầu hiện ở giây 3.5
-            end: 4.5,   // Kết thúc ở giây 4.5
-            text: "Hư Thức, TỬ !" 
-        },
-        { 
-            start: 7.5, // Bắt đầu hiện ở giây 7.5
-            end: 8.0,   // Kết thúc ở giây 9
-            // Thêm dòng just kidding nhỏ bên dưới
-            text: "Bắn dô cái mỏ mày <span class='sub-small'>*just kidding*</span>" 
-        }
-    ];
-
-    video.addEventListener('timeupdate', () => {
-        const currentTime = video.currentTime;
-        let activeSubtitle = "";
-
-        // Kiểm tra xem thời gian hiện tại có nằm trong khoảng nào không
-        subtitles.forEach(sub => {
-            if (currentTime >= sub.start && currentTime <= sub.end) {
-                activeSubtitle = sub.text;
-            }
-        });
-
-        subtitleDiv.innerHTML = activeSubtitle;
-    });
+    // Phát video
+    video.play();
+    video.volume = 1.0;
 }

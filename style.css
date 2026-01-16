@@ -1,77 +1,42 @@
-/* --- THIẾT LẬP CHUNG --- */
+/* --- GIỮ NGUYÊN CÁC THIẾT LẬP CƠ BẢN --- */
 body {
     margin: 0; padding: 0;
     width: 100vw; height: 100vh;
     overflow: hidden;
-    background-color: #050505; /* Đen thẳm */
+    background-color: #050505;
     font-family: 'Montserrat', sans-serif;
     color: white;
     display: flex; justify-content: center; align-items: center;
 }
 
-/* --- 1. MÀN HÌNH PASSWORD --- */
+/* ... (Giữ nguyên CSS phần Password và Start Overlay như cũ) ... */
 #password-screen {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: radial-gradient(circle, #1a1a1a 0%, #000000 100%);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 100;
+    display: flex; justify-content: center; align-items: center; z-index: 100;
 }
-
 .pass-box {
-    text-align: center;
-    border: 2px solid #00e5ff;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
-    background: rgba(0, 0, 0, 0.8);
+    text-align: center; border: 2px solid #00e5ff; padding: 40px;
+    border-radius: 15px; background: rgba(0, 0, 0, 0.8);
 }
-
-.pass-box h2 {
-    font-family: 'Orbitron', sans-serif;
-    color: #00e5ff; margin-bottom: 10px;
-}
-
 #pass-input {
-    padding: 10px; font-size: 1.2rem;
-    border: 1px solid #555; background: #222; color: #fff;
-    border-radius: 5px; text-align: center; margin-top: 15px;
-    width: 200px; outline: none;
+    padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center;
 }
-
-#pass-input:focus { border-color: #00e5ff; }
-
 button {
-    margin-top: 15px; padding: 10px 25px;
-    font-family: 'Orbitron', sans-serif; font-weight: bold;
-    background: #00e5ff; color: #000; border: none;
-    border-radius: 5px; cursor: pointer;
-    transition: transform 0.2s;
+    margin-top: 15px; padding: 10px 25px; cursor: pointer;
+    background: #00e5ff; border: none; font-weight: bold;
 }
-button:hover { transform: scale(1.05); box-shadow: 0 0 15px #00e5ff; }
-
-#error-msg { color: #ff3333; margin-top: 10px; font-weight: bold; font-size: 0.9rem; }
-
-/* --- 2. MÀN HÌNH CLICK START --- */
 #start-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: black; z-index: 90;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer;
+    display: flex; justify-content: center; align-items: center; cursor: pointer;
 }
-
 .pulse-text {
-    font-size: 2rem; font-weight: bold; text-transform: uppercase;
-    color: #fff; text-shadow: 0 0 10px #fff, 0 0 20px #00e5ff;
-    animation: textPulse 1.5s infinite alternate;
+    font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate;
 }
+@keyframes textPulse { from { opacity: 0.5; } to { opacity: 1; } }
 
-@keyframes textPulse {
-    from { opacity: 0.6; transform: scale(1); }
-    to { opacity: 1; transform: scale(1.1); }
-}
-
-/* --- 3. MÀN HÌNH ĐẾM NGƯỢC --- */
+/* --- PHẦN QUAN TRỌNG: ĐẾM NGƯỢC --- */
 #countdown-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: black; z-index: 80;
@@ -82,30 +47,33 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 15px #00e5ff; }
     position: relative; width: 200px; height: 200px;
 }
 
+/* Xoay toàn bộ SVG -90 độ để điểm bắt đầu ở đỉnh 12h */
 .timer-svg {
-    transform: rotate(-90deg); /* Xoay để bắt đầu từ đỉnh 12h */
+    transform: rotate(-90deg); 
 }
 
 .circle-bg {
-    fill: none; stroke: #333; stroke-width: 10;
+    fill: none; stroke: #333; stroke-width: 8;
 }
 
 .circle-run {
-    fill: none; stroke: #00e5ff; stroke-width: 10;
+    fill: none;
+    stroke: #00e5ff; 
+    stroke-width: 8;
     stroke-linecap: round;
-    stroke-dasharray: 565; /* Chu vi hình tròn 2*PI*90 */
-    stroke-dashoffset: 0;
-    /* Không gán animation ở đây, gán bằng JS để kiểm soát từng giây */
+    /* Chu vi = 2 * PI * 90 ≈ 565 */
+    stroke-dasharray: 565;
+    stroke-dashoffset: 0; /* Mặc định là đầy */
 }
 
-/* Class kích hoạt chạy vòng tròn trong 1s */
-.animate-circle {
-    animation: circleTick 1s linear forwards;
+/* Animation chạy tua ngược: Từ Đầy (0) -> Hết (565) */
+.animate-reverse {
+    animation: reverseTick 1s linear forwards;
 }
 
-@keyframes circleTick {
-    from { stroke-dashoffset: 565; } /* Bắt đầu trống */
-    to { stroke-dashoffset: 0; }     /* Chạy đầy vòng */
+@keyframes reverseTick {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: 565; }
 }
 
 #countdown-number {
@@ -116,14 +84,10 @@ button:hover { transform: scale(1.05); box-shadow: 0 0 15px #00e5ff; }
     text-shadow: 0 0 20px #00e5ff;
 }
 
-/* --- 4. MÀN HÌNH CONTENT (VIDEO) --- */
+/* ... (Giữ nguyên CSS phần Content Video) ... */
 #content-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: black; z-index: 50;
 }
 .video-container { width: 100%; height: 100%; }
 video { width: 100%; height: 100%; object-fit: cover; }
-#video-subtitles {
-    position: absolute; bottom: 10%; width: 100%; text-align: center;
-    color: white; font-size: 1.5rem; text-shadow: 2px 2px 4px black;
-}

@@ -3,22 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Access</title>
+    <title>Special Gift</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <audio id="sound-nhacma" src="nhacma.mp3" loop preload="auto"></audio> 
-    
     <audio id="sound-beep" src="beep.mp3" preload="auto"></audio>
+
     <div id="password-screen">
         <div class="pass-box">
             <h2>SECURITY CHECK</h2>
             <p>Nhập mã truy cập</p>
-            <input type="password" id="pass-input" placeholder="Enter Passcode..." maxlength="10">
+            <input type="password" id="pass-input" placeholder="Passcode..." maxlength="10">
             <button onclick="checkPass()">UNLOCK</button>
-            <p id="error-msg" style="display: none;">Mật khẩu sai!</p>
+            <p id="error-msg" style="display: none;">Sai mật khẩu gòi!</p>
         </div>
     </div>
 
@@ -39,11 +39,16 @@
     </div>
 
     <div id="content-screen" style="display: none;">
-        <div class="video-container">
-            <video id="main-video" playsinline>
-                <source src="gojo3.mp4" type="video/mp4">
-            </video>
-            <div id="video-subtitles"></div>
+        <canvas id="fireworks"></canvas>
+        
+        <div class="main-layout">
+            <div class="image-section">
+                <img src="ma.jpg" id="ma-img" alt="Birthday Gift">
+            </div>
+            
+            <div class="text-section">
+                <div id="message-container"></div>
+            </div>
         </div>
     </div>
 

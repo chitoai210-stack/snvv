@@ -9,14 +9,16 @@
 </head>
 <body>
 
+    <audio id="sound-nhacma" src="nhacma.mp3" loop preload="auto"></audio> 
+    
     <audio id="sound-beep" src="beep.mp3" preload="auto"></audio>
-    <audio id="sound-theme" src="cute.mp3" loop preload="auto"></audio> <audio id="sound-click" src="beep.mp3" preload="auto"></audio> <div id="password-screen">
+    <div id="password-screen">
         <div class="pass-box">
             <h2>SECURITY CHECK</h2>
-            <p>Nhập mã truy cập để tiếp tục</p>
+            <p>Nhập mã truy cập</p>
             <input type="password" id="pass-input" placeholder="Enter Passcode..." maxlength="10">
             <button onclick="checkPass()">UNLOCK</button>
-            <p id="error-msg" style="display: none;">Mật khẩu sai! Vui lòng thử lại.</p>
+            <p id="error-msg" style="display: none;">Mật khẩu sai!</p>
         </div>
     </div>
 
@@ -30,7 +32,7 @@
         <div class="timer-container">
             <svg class="timer-svg" width="200" height="200">
                 <circle class="circle-bg" cx="100" cy="100" r="90"></circle>
-                <circle class="circle-run" cx="100" cy="100" r="90"></circle>
+                <circle id="circle-effect" class="circle-run" cx="100" cy="100" r="90"></circle>
             </svg>
             <span id="countdown-number">5</span>
         </div>
@@ -40,7 +42,6 @@
         <div class="video-container">
             <video id="main-video" playsinline>
                 <source src="gojo3.mp4" type="video/mp4">
-                Trình duyệt không hỗ trợ video.
             </video>
             <div id="video-subtitles"></div>
         </div>

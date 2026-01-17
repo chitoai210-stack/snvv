@@ -14,11 +14,10 @@ body {
     display: flex; justify-content: center; align-items: center;
     background: black;
 }
-/* Z-index */
 #password-screen { z-index: 100; background: radial-gradient(circle, #1a1a1a 0%, #000000 100%); }
 #start-overlay { z-index: 90; cursor: pointer; }
 #countdown-screen { z-index: 80; }
-#kage-screen { z-index: 78; } /* Mới: Kage */
+#kage-screen { z-index: 78; } 
 #gif-screen { z-index: 75; }
 #gif2-screen { z-index: 70; }
 #content-screen { z-index: 50; }
@@ -45,118 +44,117 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 20px #00e5ff; 
 }
 
-/* --- KAGE BUSHIN SCREEN (MỚI) --- */
+/* --- KAGE BUSHIN SCREEN (Đã sửa Font Size) --- */
 .kage-text {
     font-family: 'Times New Roman', serif;
-    font-size: 28px; /* Size 20 word ~ 26-28px web */
+    /* Size 30 word ~ 40px web */
+    font-size: 40px; 
     color: white;
     font-weight: bold;
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
-/* --- GIF SCREENS --- */
+/* --- GIF/VIDEO SCREENS --- */
 .fullscreen-gif { width: 100%; height: 100%; object-fit: cover; }
 
-/* --- CHỮ LÊU LÊU (ĐÃ SỬA MÀU) --- */
+/* --- CHỮ LÊU LÊU --- */
 #mockery-text {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    
-    font-size: 28px; 
-    font-weight: bold;
-    font-family: 'Montserrat', sans-serif;
-    
-    /* MÀU MỚI: Vàng Gold (Style Naruto) + Viền chữ đen */
+    font-size: 28px; font-weight: bold; font-family: 'Montserrat', sans-serif;
     color: #ffd700; 
-    -webkit-text-stroke: 1px black; /* Viền đen giúp nổi trên mọi nền */
+    -webkit-text-stroke: 1px black; 
     text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-    
-    background: rgba(0, 0, 0, 0.7); /* Nền tối đậm hơn chút */
-    padding: 20px 40px;
-    border-radius: 10px;
-    border: 2px solid #ffd700;
-    
+    background: rgba(0, 0, 0, 0.7); 
+    padding: 20px 40px; border-radius: 10px; border: 2px solid #ffd700;
     display: none; 
 }
 
-/* --- MÀN HÌNH CHÍNH (SỬA LẠI LAYOUT CHỐNG LỖI) --- */
+/* --- MÀN HÌNH CHÍNH (ANIMATION MỚI) --- */
 #fireworks { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
 
 .main-layout { 
     width: 100%; height: 100%; 
-    position: relative; 
-    display: flex; /* Dùng Flex để kiểm soát tốt hơn */
+    position: relative; display: flex; 
 }
 
-/* Wrapper riêng cho ảnh để dễ xử lý vị trí */
+/* --- 1. PHẦN ẢNH --- */
 .image-wrapper {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; /* Để không che chữ */
-    z-index: 10;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 10;
 }
 
 .image-section {
     position: absolute;
-    /* Căn giữa mặc định */
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     
-    /* Hiệu ứng trượt */
-    transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-    will-change: left;
+    /* MẶC ĐỊNH: Ẩn đi để tạo hiệu ứng hiện dần */
+    opacity: 0; 
     
-    /* Kích thước an toàn: Không bao giờ quá to */
-    height: auto;
-    max-height: 80vh; 
-    width: auto;
-    max-width: 45vw; /* Giới hạn chiều rộng */
+    /* Animation settings */
+    transition: opacity 2s ease, left 2s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: left, opacity;
     
+    height: auto; max-height: 80vh; 
+    width: auto; max-width: 45vw;
     display: flex; align-items: center; justify-content: center;
 }
 
 #ma-img {
-    max-height: 80vh; 
-    max-width: 100%; /* Fit theo khung cha */
+    max-height: 80vh; max-width: 100%;
     border-radius: 15px;
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Trạng thái trượt sang trái */
-.image-section.move-left {
-    left: 25%;
+/* STEP 1: Hiện lên ở giữa */
+.image-section.fade-in-center {
+    opacity: 1;
 }
 
-/* Wrapper cho Text */
+/* STEP 2: Trượt sang trái (Chừa lề 5% thay vì dính sát cạnh) */
+.image-section.move-left {
+    left: 28%; /* Canh khoảng 28% màn hình để đẹp hơn */
+}
+
+
+/* --- 2. PHẦN CHỮ (ANIMATION TRƯỢT TỪ PHẢI) --- */
 .text-wrapper {
-    position: absolute;
-    top: 0; right: 0; width: 50%; height: 100%;
-    z-index: 20; /* Luôn nằm trên ảnh */
-    pointer-events: none;
+    position: absolute; top: 0; right: 0; width: 50%; height: 100%;
+    z-index: 20; pointer-events: none; overflow: hidden; /* Ẩn phần chữ chưa trượt vào */
 }
 
 .text-section {
     position: absolute;
-    top: 50%; left: 10%; /* Căn lề trong khung bên phải */
+    top: 50%; left: 10%; 
     transform: translateY(-50%);
+    width: 80%; height: 80vh;
     
-    width: 80%; /* Chiếm 80% của khung bên phải */
-    height: 80vh; /* Cao bằng chiều cao tối đa của ảnh */
+    /* MẶC ĐỊNH: Đẩy sang phải 120% để khuất màn hình */
+    transform: translate(120%, -50%); 
+    opacity: 0;
+
+    /* Transition trượt vào */
+    transition: transform 1.5s ease-out, opacity 1.5s ease;
     
     display: flex; flex-direction: column; 
     justify-content: flex-start; align-items: flex-start;
-    transition: opacity 2s ease;
-    
-    pointer-events: auto; /* Cho phép bôi đen/copy chữ */
+    pointer-events: auto; 
 }
 
+/* STEP 3: Trượt vào vị trí cũ */
+.text-section.slide-in-right {
+    transform: translate(0, -50%);
+    opacity: 1;
+}
+
+/* Text Container */
 #message-container {
     width: 100%;
     font-family: 'Times New Roman', serif;
-    font-size: 21px; 
-    color: #fff;
+    font-size: 21px; color: #fff;
     overflow-y: hidden; 
 }
 
@@ -169,6 +167,7 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 }
 #message-container p.show-text { opacity: 1; transform: translateY(0); }
 
+/* Các định dạng font */
 .date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; display: block; margin-bottom: 10px;}
 .highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.5em; margin-top: 20px; display: block; text-align: right;}
 .highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.2em; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}

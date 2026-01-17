@@ -21,18 +21,25 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 .pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; }
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
 
-/* --- COUNTDOWN --- */
+/* --- COUNTDOWN (FIXED) --- */
 #countdown-screen { background: black; z-index: 80; }
 .timer-container { position: relative; width: 200px; height: 200px; }
 .timer-svg { transform: rotate(-90deg); }
 .circle-bg { fill: none; stroke: #333; stroke-width: 8; }
+
 .circle-run { 
     fill: none; stroke: #00e5ff; stroke-width: 8; stroke-linecap: round;
-    stroke-dasharray: 565; 
-    stroke-dashoffset: 0; 
+    stroke-dasharray: 565; /* Chu vi hình tròn */
+    stroke-dashoffset: 0;  /* Mặc định là đầy */
 }
-.animate-reverse { animation: reverseTick 1s linear forwards; }
-@keyframes reverseTick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 565; } }
+
+/* Animation chạy trong 1s (linear để mượt) */
+.animate-reverse { animation: reverseTick 0.95s linear forwards; }
+@keyframes reverseTick { 
+    from { stroke-dashoffset: 0; } 
+    to { stroke-dashoffset: 565; } 
+}
+
 #countdown-number { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 20px #00e5ff; 
@@ -57,15 +64,15 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    transition: all 1.5s ease-in-out;
+    /* Thời gian ảnh trượt về: 2s cho chậm rãi */
+    transition: all 2s ease-in-out; 
     z-index: 10;
-    /* Chiều cao tối đa của ảnh để căn text theo */
     height: 80vh; 
     display: flex; align-items: center; justify-content: center;
 }
 
 #ma-img {
-    max-height: 100%; max-width: 40vw; /* Fit trong khung 80vh */
+    max-height: 100%; max-width: 40vw;
     border-radius: 15px;
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
@@ -76,32 +83,28 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     transform: translate(-50%, -50%);
 }
 
-/* --- TEXT SECTION (ĐÃ CHỈNH SỬA) --- */
+/* --- TEXT SECTION --- */
 .text-section {
     position: absolute;
-    /* Căn giữa theo chiều dọc giống ảnh */
-    top: 50%; 
-    right: 5%; 
+    top: 50%; right: 5%; 
     transform: translateY(-50%);
-    
     width: 45%;
-    height: 80vh; /* Bằng chiều cao của image-section để căn đều */
+    height: 80vh;
     z-index: 11;
-    
-    display: flex; 
-    flex-direction: column; 
-    justify-content: flex-start; /* Bắt đầu từ trên cùng */
+    display: flex; flex-direction: column; 
+    justify-content: flex-start;
     align-items: flex-start;
     
-    transition: opacity 2s ease;
+    /* Thời gian mờ đi của cả khung chữ: 2s */
+    transition: opacity 2s ease; 
 }
 
 #message-container {
     width: 100%;
     font-family: 'Times New Roman', serif;
-    font-size: 16px; /* Tăng nhẹ size cho dễ đọc */
+    font-size: 16px; 
     color: #fff;
-    overflow-y: hidden; /* Ẩn thanh cuộn để đẹp hơn, code tự scroll */
+    overflow-y: hidden; 
 }
 
 #message-container p {
@@ -109,14 +112,14 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     opacity: 0; transform: translateY(20px);
     transition: all 0.5s ease;
     text-shadow: 1px 1px 2px black;
-    text-align: justify; /* Canh đều 2 bên cho đẹp */
+    text-align: justify;
 }
 #message-container p.show-text { opacity: 1; transform: translateY(0); }
 
-/* --- STYLE CHỮ --- */
+/* Style Chữ */
 .date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 18px; display: block; margin-bottom: 10px;}
 .highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.8rem; margin-top: 20px; display: block; text-align: right;}
 .highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.4rem; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}
 
-/* Hiệu ứng biến mất cuối cùng */
+/* Class ẩn text */
 .fade-out { opacity: 0 !important; pointer-events: none; }

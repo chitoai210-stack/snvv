@@ -8,7 +8,7 @@ body {
     color: white;
 }
 
-/* --- CÁC MÀN HÌNH PHỤ (GIỮ NGUYÊN) --- */
+/* --- CÁC MÀN HÌNH PHỤ --- */
 #password-screen, #start-overlay, #countdown-screen, #gif-screen, #gif2-screen, #kage-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; justify-content: center; align-items: center;
@@ -20,15 +20,30 @@ body {
 #kage-screen { z-index: 78; } 
 #gif-screen { z-index: 75; }
 #gif2-screen { z-index: 70; }
-#content-screen { z-index: 50; }
 
-/* Các style phụ (Password, Countdown...) giữ nguyên */
+/* MÀN HÌNH CHÍNH: Thêm nền hoa */
+#content-screen { 
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 50;
+    /* Thêm ảnh nền full màn hình */
+    background: url('hoa.jpeg') no-repeat center center;
+    background-size: cover; /* Phủ kín màn hình */
+}
+/* Lớp phủ tối để chữ dễ đọc hơn trên nền hoa (tùy chọn) */
+#content-screen::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* Đen mờ 60% */
+    z-index: -1; /* Nằm dưới nội dung nhưng trên ảnh nền */
+}
+
+/* Password Box */
 .pass-box { text-align: center; border: 2px solid #00e5ff; padding: 40px; border-radius: 15px; background: rgba(0,0,0,0.8); }
 #pass-input { padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center; border-radius: 5px; }
 button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
 .pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; }
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
 
+/* Countdown */
 .timer-container { position: relative; width: 200px; height: 200px; }
 .timer-svg { transform: rotate(-90deg); }
 .circle-bg { fill: none; stroke: #333; stroke-width: 8; }
@@ -37,20 +52,55 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 @keyframes reverseTick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 565; } }
 #countdown-number { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 20px #00e5ff; }
 
-.kage-text { font-family: 'Times New Roman', serif; font-size: 40px; color: white; font-weight: bold; text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+/* --- KAGE BUSHIN (HIỆU ỨNG KHÓI) --- */
+.kage-text {
+    font-family: 'Times New Roman', serif;
+    font-size: 40px; 
+    font-weight: bold;
+    color: transparent; /* Bắt đầu trong suốt */
+    
+    /* Animation khói */
+    animation: smokeEffect 4s ease-out forwards;
+}
+
+@keyframes smokeEffect {
+    0% {
+        opacity: 0;
+        text-shadow: 0 0 40px rgba(255, 255, 255, 0);
+        transform: scale(0.8);
+        filter: blur(10px); /* Mờ như khói */
+        color: rgba(255, 255, 255, 0);
+    }
+    50% {
+        opacity: 1;
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        filter: blur(2px);
+        color: rgba(255, 255, 255, 0.5);
+    }
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        transform: scale(1);
+        filter: blur(0);
+        color: rgba(255, 255, 255, 1); /* Hiện rõ */
+    }
+}
+
+/* GIF/Video */
 .fullscreen-gif { width: 100%; height: 100%; object-fit: cover; }
+
+/* Lêu lêu */
 #mockery-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; font-weight: bold; font-family: 'Montserrat', sans-serif; color: #ffd700; -webkit-text-stroke: 1px black; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); background: rgba(0, 0, 0, 0.7); padding: 20px 40px; border-radius: 10px; border: 2px solid #ffd700; display: none; }
 
-/* --- MÀN HÌNH CHÍNH (ĐÃ FIX LỖI CAO/LỆCH) --- */
+/* --- MÀN HÌNH CHÍNH --- */
 #fireworks { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
 
 .main-layout { 
-    width: 100vw; height: 100vh; /* Bắt buộc full màn hình */
-    position: relative; 
-    overflow: hidden;
+    width: 100vw; height: 100vh; 
+    position: relative; overflow: hidden;
 }
 
-/* --- 1. PHẦN ẢNH --- */
+/* 1. PHẦN ẢNH */
 .image-wrapper {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 10;
@@ -58,47 +108,33 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 .image-section {
     position: absolute;
-    /* Căn giữa tuyệt đối */
     top: 50%; left: 50%;
-    
-    /* Trạng thái ban đầu: Ở giữa + Ẩn */
     transform: translate(-50%, -50%);
     opacity: 0; 
-    
-    /* Animation settings */
     transition: all 2s cubic-bezier(0.25, 1, 0.5, 1);
     
-    /* Kích thước: Quan trọng để không bị to quá khổ */
     height: auto; 
-    max-height: 75vh; /* Giới hạn chiều cao an toàn */
-    width: auto; 
-    max-width: 45vw;
+    max-height: 75vh; /* Chiều cao tối đa */
+    width: auto; max-width: 45vw;
     
     display: flex; align-items: center; justify-content: center;
 }
 
 #ma-img {
-    max-height: 75vh; /* Đồng bộ với khung cha */
-    width: auto;
-    object-fit: contain; /* Đảm bảo ảnh không bị méo/cắt */
+    max-height: 75vh; width: auto;
+    object-fit: contain;
     border-radius: 15px;
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-/* STEP 1: Hiện lên ở giữa */
-.image-section.fade-in-center {
-    opacity: 1;
-}
-
-/* STEP 2: Trượt sang trái 
-   Fix lỗi cao: Ta đổi transform để neo cạnh trái thay vì neo tâm */
+.image-section.fade-in-center { opacity: 1; }
 .image-section.move-left {
-    left: 5%; /* Cách lề trái 5% */
-    transform: translate(0, -50%); /* Chỉ dịch chuyển Y -50% để giữ căn giữa dọc, bỏ X */
+    left: 5%; 
+    transform: translate(0, -50%);
 }
 
-/* --- 2. PHẦN CHỮ --- */
+/* 2. PHẦN CHỮ (ĐÃ CHỈNH CĂN LỀ TRÊN) */
 .text-wrapper {
     position: absolute; top: 0; right: 0; width: 50%; height: 100%;
     z-index: 20; pointer-events: none; 
@@ -106,29 +142,32 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 .text-section {
     position: absolute;
-    /* Căn giữa theo chiều dọc */
+    /* Vị trí dọc: Căn giữa màn hình */
     top: 50%; 
-    left: 5%; /* Cách mép trái của khung chứa text (tức là gần giữa màn hình) */
+    transform: translateY(-50%) translate(150%, 0); /* Vừa căn giữa dọc, vừa đẩy sang phải */
     
-    width: 85%; /* Chiều rộng khung chữ */
-    height: auto;
-    max-height: 80vh;
+    left: 5%; 
+    width: 85%;
     
-    /* Mặc định: Đẩy ra ngoài bên phải */
-    transform: translate(150%, -50%); 
+    /* CHIỀU CAO: Bắt buộc bằng chiều cao max của ảnh để căn ngang hàng */
+    height: 75vh; 
+    
     opacity: 0;
-
     transition: transform 1.5s ease-out, opacity 1.5s ease;
     
-    display: flex; flex-direction: column; 
-    justify-content: center; /* Căn nội dung vào giữa khung */
+    display: flex; 
+    flex-direction: column; 
+    
+    /* QUAN TRỌNG: Căn nội dung lên trên cùng */
+    justify-content: flex-start; 
     align-items: flex-start;
+    
     pointer-events: auto; 
 }
 
-/* STEP 3: Trượt vào */
+/* Khi trượt vào: Chỉ reset X, giữ nguyên Y (-50%) */
 .text-section.slide-in-right {
-    transform: translate(0, -50%); /* Về vị trí chuẩn */
+    transform: translateY(-50%) translate(0, 0); 
     opacity: 1;
 }
 
@@ -136,12 +175,12 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     width: 100%;
     font-family: 'Times New Roman', serif;
     font-size: 21px; color: #fff;
-    overflow-y: auto; /* Cho phép cuộn nếu quá dài */
-    max-height: 75vh;
+    overflow-y: auto;
+    max-height: 100%; /* Full chiều cao của text-section */
     padding-right: 10px;
 }
 
-/* Scrollbar đẹp cho chrome */
+/* Scrollbar */
 #message-container::-webkit-scrollbar { width: 5px; }
 #message-container::-webkit-scrollbar-thumb { background: #00e5ff; border-radius: 10px; }
 
@@ -154,6 +193,7 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 }
 #message-container p.show-text { opacity: 1; transform: translateY(0); }
 
+/* Font Styles */
 .date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; display: block; margin-bottom: 10px;}
 .highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.5em; margin-top: 20px; display: block; text-align: right;}
 .highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.2em; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}

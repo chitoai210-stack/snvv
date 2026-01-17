@@ -4,7 +4,8 @@ let nhacMaSound, beepSound, rasenSound, phanthanSound, cuoiSound;
 const messageLines = [
     "<span class='date-highlight'>- 08/01/2026 -</span>",
     "Dù không được đúng ngày cho lắm, nhưng coi như là quà sinh nhật muộn nhe. Thì là, hãy xem đây là 1 món quà tinh thần, của 1 ai đó trên thế giới này, not me !",
-    "Không biết ngày hôm nay của bạn như thế nào, sẽ có chuyện vui, chuyện buồn, tức dzận, hay chỉ là 1 ngày bình thường như bao ngày ? Có nhận được những lời chúc mừng từ những người mình yêu thương và trân trọng ?",
+    "Thật ra là đó giờ cảm giác cũng nhận nhiều quà có ý nghĩa của bạn Minh Em nhưng mà cũng không có gì để tặng lại những dịp như thế này !",
+    "Nên là mong sao",
     "Dù có chuyện gì đi nữa, sau tất cả, đến thời điểm hiện tại, bạn hãy thật vui vẻ và hạnh phúc nhé ! Vì những điều đã trải qua, vì khi đọc những dòng này, bạn vẫn có thể mỉm cười, có thể khóc, có thể ở bên những người mình yêu quý và chia sẻ những cảm xúc ấy !",
     "Có thể là ngày mai, 1 tháng, 1 năm, 10 năm hay 20 năm nữa, tất cả chúng ta sẽ còn ở bên nhau, có thể không, có thể sẽ quên đi nhau theo dòng thời gian, nhưng với mình, những điều chúng ta đã từng, những kỷ niệm đó sẽ không bị lãng quên và sẽ mãi ở 1 góc của não bộ. (gì chứ tui say đắm trong quá khứ lắm, vui buồn gì cũng nhớ)",
     "Nếu sau này không ai chúc mừng sinh nhật bạn nữa, thề với bạn là sẽ luôn có 1 người ghi nhớ điều đó, chỉ cần . 1 cái là sẽ có lời chúc tới ngay và luôn ! (thặc ra là nhớ hết, tại tùy hoàn cảnh có chúc được hay ko thoai)",
@@ -83,95 +84,69 @@ function runGifSequence() {
     const gif1Screen = document.getElementById('gif-screen');
     const videoEl = gif1Screen.querySelector('video');
     gif1Screen.style.display = 'flex';
+    if(videoEl) { videoEl.currentTime = 0; videoEl.play(); }
     
-    if(videoEl) {
-        videoEl.currentTime = 0;
-        videoEl.play();
-    }
     rasenSound.currentTime = 5; 
     rasenSound.play();
 
-    // Chạy trong 5 giây sau đó chuyển cảnh
     setTimeout(() => {
         rasenSound.pause();
         if(videoEl) videoEl.pause();
         
-        // --- HIỆU ỨNG TRẮNG MÀN HÌNH ---
+        // Hiệu ứng trắng màn hình
         const whiteFlash = document.getElementById('white-flash');
         whiteFlash.style.display = 'block';
         whiteFlash.style.opacity = '1';
 
         setTimeout(() => {
-            // Tắt màn hình video
             gif1Screen.style.display = 'none'; 
-            
-            // Làm mờ dần màn trắng
             whiteFlash.style.opacity = '0';
-            
-            // Chạy sequence tiếp theo
             runGif2Sequence();
-            
-            // Ẩn hẳn màn trắng sau khi mờ xong
             setTimeout(() => { whiteFlash.style.display = 'none'; }, 1000);
-        }, 500); // Màn trắng hiện trong 0.5s trước khi chuyển
-        
+        }, 500); 
     }, 5000);
 }
 
-// --- LOGIC CÀ KHỊA MỚI ---
 function runGif2Sequence() {
     const gif2Screen = document.getElementById('gif2-screen');
     const textEl = document.getElementById('mockery-text');
     const queEl = document.getElementById('que-text');
     
     gif2Screen.style.display = 'flex';
-    
-    // Phát âm thanh cười
-    cuoiSound.currentTime = 0;
-    cuoiSound.play();
+    cuoiSound.currentTime = 0; cuoiSound.play();
 
-    // PHA 1: "Lêu lêu, đồ chưa có bồ" (2 giây)
+    // 1. "Lêu lêu..."
     textEl.textContent = "Lêu lêu, đồ chưa có bồ";
     textEl.style.display = 'block';
 
     setTimeout(() => {
-        // PHA 2: "làm gì có anh nào mét 8 đâu" (3 giây)
+        // 2. "Làm gì có..."
         textEl.textContent = "làm gì có anh nào mét 8 đâu";
         
         setTimeout(() => {
-            // PHA 3: SPAM "Lêu lêu" đầy màn hình
-            textEl.style.display = 'none'; // Ẩn text chính
-            
+            // 3. Spam "Lêu lêu"
+            textEl.style.display = 'none'; 
             let spamCount = 0;
             let spamInterval = setInterval(() => {
                 const spamItem = document.createElement('div');
                 spamItem.classList.add('spam-item');
                 spamItem.innerText = "lêu lêu";
-                // Random vị trí
                 spamItem.style.left = Math.random() * 90 + "%";
                 spamItem.style.top = Math.random() * 90 + "%";
-                // Random màu sắc cho vui mắt
                 spamItem.style.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
-                
                 gif2Screen.appendChild(spamItem);
-                
                 spamCount++;
-                if(spamCount > 30) clearInterval(spamInterval); // Spam khoảng 30 cái
-            }, 100); // 0.1s ra 1 cái
+                if(spamCount > 30) clearInterval(spamInterval);
+            }, 100);
 
-            // Chạy spam trong 3 giây
             setTimeout(() => {
                 clearInterval(spamInterval);
-                
-                // PHA 4: QUEEEEEEEEE
-                // Xóa hết chữ spam
                 const spams = document.querySelectorAll('.spam-item');
                 spams.forEach(el => el.remove());
                 
-                // Hiện QUEEEE
+                // 4. QUEEEEE
                 queEl.style.display = 'block';
                 
-                // Đợi 3 giây cho quê rồi vào trang chính
                 setTimeout(() => {
                     queEl.style.display = 'none';
                     gif2Screen.style.display = 'none';
@@ -179,14 +154,12 @@ function runGif2Sequence() {
                     showContentSequence();
                 }, 3000);
 
-            }, 3000); // Kết thúc pha spam
-
-        }, 2000); // Kết thúc pha 1 (2s) -> sang pha 2 (3s)
-        
+            }, 3000); 
+        }, 2000); 
     }, 2000);
 }
 
-// --- MÀN HÌNH CHÍNH ---
+// --- MÀN HÌNH CHÍNH (ĐÃ UPDATE TIMING & ENDING) ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex'; 
@@ -194,19 +167,25 @@ function showContentSequence() {
     const imgSection = document.querySelector('.image-section');
     const textSection = document.querySelector('.text-section');
 
+    // MỚI: Đợi 2 giây (chỉ thấy nền hoa) rồi mới hiện ảnh
     setTimeout(() => {
+        
+        // Hiện ảnh
         imgSection.classList.add('fade-in-center');
 
+        // Sau khi hiện xong -> trượt
         setTimeout(() => {
             imgSection.classList.add('move-left');
             textSection.classList.add('slide-in-right');
 
+            // Sau khi trượt xong -> hiện chữ
             setTimeout(() => {
                 runTextAnimation();
             }, 1600); 
 
         }, 2500); 
-    }, 100); 
+
+    }, 2000); // <-- Delay 2s đầu tiên
 }
 
 function runTextAnimation() {
@@ -225,8 +204,16 @@ function runTextAnimation() {
             if (readingTime < 1500) readingTime = 1500;
 
             if (lineIndex === messageLines.length - 1) {
-                startFireworks();
-                setTimeout(() => { endSequence(); }, 2000); 
+                // Dòng cuối cùng hiện lên
+                // 1. Bắn pháo hoa
+                startFireworks(); 
+                
+                // 2. Chuyển cảnh kết thúc (Ảnh về giữa)
+                // Đợi người dùng đọc xong dòng cuối (readingTime) + thêm 1s rồi mới thu về
+                setTimeout(() => {
+                    endSequence();
+                }, readingTime + 1000); 
+
             } else {
                 lineIndex++;
                 setTimeout(showNextLine, readingTime);
@@ -239,9 +226,15 @@ function runTextAnimation() {
 function endSequence() {
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
+
+    // Làm mờ chữ
     textSection.classList.remove('slide-in-right'); 
     textSection.classList.add('fade-out');
-    setTimeout(() => { imgSection.classList.remove('move-left'); }, 2000);
+
+    // Trả ảnh về giữa (trong khi pháo hoa vẫn bắn)
+    setTimeout(() => {
+        imgSection.classList.remove('move-left');
+    }, 2000);
 }
 
 // --- PHÁO HOA ---

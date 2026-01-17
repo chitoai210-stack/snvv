@@ -1,5 +1,5 @@
 const SECRET_PASS = "CT011002"; 
-let nhacMaSound, beepSound, rasenSound, phanthanSound;
+let nhacMaSound, beepSound, rasenSound, phanthanSound, cuoiSound;
 
 const messageLines = [
     "<span class='date-highlight'>- 08/01/2026 -</span>",
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     beepSound = document.getElementById('sound-beep');
     rasenSound = document.getElementById('sound-rasen');
     phanthanSound = document.getElementById('sound-phanthan');
+    cuoiSound = document.getElementById('sound-cuoi');
 
     document.getElementById('pass-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPass();
@@ -31,10 +32,8 @@ function checkPass() {
         document.getElementById('password-screen').style.display = 'none';
         const startOverlay = document.getElementById('start-overlay');
         startOverlay.style.display = 'flex';
-        
         nhacMaSound.volume = 0.8;
         nhacMaSound.play().catch(() => console.log("Audio interact needed"));
-
         startOverlay.addEventListener('click', () => {
             startOverlay.style.display = 'none';
             runCountdown();
@@ -48,7 +47,6 @@ function runCountdown() {
     const countdownScreen = document.getElementById('countdown-screen');
     const numberEl = document.getElementById('countdown-number');
     const circleEl = document.getElementById('circle-effect');
-    
     countdownScreen.style.display = 'flex';
     let count = 5;
 
@@ -59,7 +57,6 @@ function runCountdown() {
         setTimeout(() => { circleEl.classList.add('animate-reverse'); }, 10);
         beepSound.currentTime = 0;
         beepSound.play();
-
         if (count === 0) {
             setTimeout(runKageSequence, 1000);
             return;
@@ -70,75 +67,126 @@ function runCountdown() {
     runTick();
 }
 
-// --- 1. KAGE BUSHIN (Đợi âm thanh hết mới chuyển) ---
 function runKageSequence() {
     document.getElementById('countdown-screen').style.display = 'none';
     const kageScreen = document.getElementById('kage-screen');
     kageScreen.style.display = 'flex';
-
     phanthanSound.currentTime = 0;
     phanthanSound.play();
-
-    // SỰ KIỆN: Khi âm thanh chạy xong -> Chuyển cảnh
     phanthanSound.onended = function() {
         kageScreen.style.display = 'none';
         runGifSequence(); 
     };
 }
 
-// --- 2. VIDEO GIF RASEN ---
 function runGifSequence() {
     const gif1Screen = document.getElementById('gif-screen');
-    const videoEl = gif1Screen.querySelector('video'); // Lấy thẻ video
+    const videoEl = gif1Screen.querySelector('video');
     gif1Screen.style.display = 'flex';
     
-    // Đảm bảo video chạy từ đầu
     if(videoEl) {
         videoEl.currentTime = 0;
         videoEl.play();
     }
-
-    // Âm thanh: Tua đến giây thứ 5
     rasenSound.currentTime = 5; 
     rasenSound.play();
 
-    // Chạy trong 5 giây (hoặc thời gian bạn muốn)
+    // Chạy trong 5 giây sau đó chuyển cảnh
     setTimeout(() => {
-        gif1Screen.style.display = 'none'; 
         rasenSound.pause();
         if(videoEl) videoEl.pause();
-        runGif2Sequence(); 
+        
+        // --- HIỆU ỨNG TRẮNG MÀN HÌNH ---
+        const whiteFlash = document.getElementById('white-flash');
+        whiteFlash.style.display = 'block';
+        whiteFlash.style.opacity = '1';
+
+        setTimeout(() => {
+            // Tắt màn hình video
+            gif1Screen.style.display = 'none'; 
+            
+            // Làm mờ dần màn trắng
+            whiteFlash.style.opacity = '0';
+            
+            // Chạy sequence tiếp theo
+            runGif2Sequence();
+            
+            // Ẩn hẳn màn trắng sau khi mờ xong
+            setTimeout(() => { whiteFlash.style.display = 'none'; }, 1000);
+        }, 500); // Màn trắng hiện trong 0.5s trước khi chuyển
+        
     }, 5000);
 }
 
-// --- 3. GIF LÊU LÊU ---
+// --- LOGIC CÀ KHỊA MỚI ---
 function runGif2Sequence() {
     const gif2Screen = document.getElementById('gif2-screen');
     const textEl = document.getElementById('mockery-text');
+    const queEl = document.getElementById('que-text');
+    
     gif2Screen.style.display = 'flex';
+    
+    // Phát âm thanh cười
+    cuoiSound.currentTime = 0;
+    cuoiSound.play();
 
-    let count = 0;
-    const maxCount = 3;
+    // PHA 1: "Lêu lêu, đồ chưa có bồ" (2 giây)
+    textEl.textContent = "Lêu lêu, đồ chưa có bồ";
+    textEl.style.display = 'block';
 
-    function loopText() {
-        if (count < maxCount) {
-            textEl.style.display = 'block';
+    setTimeout(() => {
+        // PHA 2: "làm gì có anh nào mét 8 đâu" (3 giây)
+        textEl.textContent = "làm gì có anh nào mét 8 đâu";
+        
+        setTimeout(() => {
+            // PHA 3: SPAM "Lêu lêu" đầy màn hình
+            textEl.style.display = 'none'; // Ẩn text chính
+            
+            let spamCount = 0;
+            let spamInterval = setInterval(() => {
+                const spamItem = document.createElement('div');
+                spamItem.classList.add('spam-item');
+                spamItem.innerText = "lêu lêu";
+                // Random vị trí
+                spamItem.style.left = Math.random() * 90 + "%";
+                spamItem.style.top = Math.random() * 90 + "%";
+                // Random màu sắc cho vui mắt
+                spamItem.style.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+                
+                gif2Screen.appendChild(spamItem);
+                
+                spamCount++;
+                if(spamCount > 30) clearInterval(spamInterval); // Spam khoảng 30 cái
+            }, 100); // 0.1s ra 1 cái
+
+            // Chạy spam trong 3 giây
             setTimeout(() => {
-                textEl.style.display = 'none'; 
+                clearInterval(spamInterval);
+                
+                // PHA 4: QUEEEEEEEEE
+                // Xóa hết chữ spam
+                const spams = document.querySelectorAll('.spam-item');
+                spams.forEach(el => el.remove());
+                
+                // Hiện QUEEEE
+                queEl.style.display = 'block';
+                
+                // Đợi 3 giây cho quê rồi vào trang chính
                 setTimeout(() => {
-                    count++;
-                    loopText(); 
-                }, 500); 
-            }, 2000); 
-        } else {
-            gif2Screen.style.display = 'none';
-            showContentSequence(); 
-        }
-    }
-    loopText();
+                    queEl.style.display = 'none';
+                    gif2Screen.style.display = 'none';
+                    cuoiSound.pause();
+                    showContentSequence();
+                }, 3000);
+
+            }, 3000); // Kết thúc pha spam
+
+        }, 2000); // Kết thúc pha 1 (2s) -> sang pha 2 (3s)
+        
+    }, 2000);
 }
 
-// --- 4. MÀN HÌNH CHÍNH ---
+// --- MÀN HÌNH CHÍNH ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex'; 
@@ -146,18 +194,13 @@ function showContentSequence() {
     const imgSection = document.querySelector('.image-section');
     const textSection = document.querySelector('.text-section');
 
-    // Hiện ảnh
     setTimeout(() => {
         imgSection.classList.add('fade-in-center');
 
-        // Trượt ảnh
         setTimeout(() => {
             imgSection.classList.add('move-left');
-            
-            // Trượt chữ vào
             textSection.classList.add('slide-in-right');
 
-            // Hiện từng dòng text
             setTimeout(() => {
                 runTextAnimation();
             }, 1600); 
@@ -175,7 +218,6 @@ function runTextAnimation() {
             const p = document.createElement('p');
             p.innerHTML = messageLines[lineIndex];
             container.appendChild(p);
-
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
             const plainText = p.innerText || p.textContent;
@@ -183,11 +225,8 @@ function runTextAnimation() {
             if (readingTime < 1500) readingTime = 1500;
 
             if (lineIndex === messageLines.length - 1) {
-                // Kết thúc
                 startFireworks();
-                setTimeout(() => {
-                    endSequence();
-                }, 2000); 
+                setTimeout(() => { endSequence(); }, 2000); 
             } else {
                 lineIndex++;
                 setTimeout(showNextLine, readingTime);
@@ -200,13 +239,9 @@ function runTextAnimation() {
 function endSequence() {
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
-
     textSection.classList.remove('slide-in-right'); 
     textSection.classList.add('fade-out');
-
-    setTimeout(() => {
-        imgSection.classList.remove('move-left');
-    }, 2000);
+    setTimeout(() => { imgSection.classList.remove('move-left'); }, 2000);
 }
 
 // --- PHÁO HOA ---

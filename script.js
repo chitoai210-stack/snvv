@@ -1,5 +1,5 @@
 const SECRET_PASS = "CT011002"; 
-let nhacMaSound, beepSound;
+let nhacMaSound, beepSound, rasenSound;
 
 const messageLines = [
     "<span class='date-highlight'>- 08/01/2026 -</span>",
@@ -17,6 +17,7 @@ const messageLines = [
 document.addEventListener('DOMContentLoaded', () => {
     nhacMaSound = document.getElementById('sound-nhacma');
     beepSound = document.getElementById('sound-beep');
+    rasenSound = document.getElementById('sound-rasen'); // Âm thanh mới
 
     document.getElementById('pass-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPass();
@@ -31,7 +32,7 @@ function checkPass() {
         startOverlay.style.display = 'flex';
         
         nhacMaSound.volume = 0.8;
-        nhacMaSound.play().catch(() => console.log("User interact needed"));
+        nhacMaSound.play().catch(() => console.log("Audio interact needed"));
 
         startOverlay.addEventListener('click', () => {
             startOverlay.style.display = 'none';
@@ -48,41 +49,94 @@ function runCountdown() {
     const circleEl = document.getElementById('circle-effect');
     
     countdownScreen.style.display = 'flex';
-    let count = 5;
+    let count = 5; // Có thể sửa thành 5
 
     const runTick = () => {
         numberEl.textContent = count;
         
-        // Reset animation vòng tròn
         circleEl.classList.remove('animate-reverse');
-        void circleEl.offsetWidth; // Force Reflow
+        void circleEl.offsetWidth; 
         setTimeout(() => { circleEl.classList.add('animate-reverse'); }, 10);
 
         beepSound.currentTime = 0;
         beepSound.play();
 
         if (count === 0) {
-            setTimeout(showContentSequence, 1000);
+            // Thay vì vào thẳng Content, ta chuyển sang Sequence GIF
+            setTimeout(runGifSequence, 1000);
             return;
         }
-
         count--;
         setTimeout(runTick, 1000);
     };
-
     runTick();
 }
 
-function showContentSequence() {
+// --- LOGIC GIF MỚI ---
+function runGifSequence() {
     document.getElementById('countdown-screen').style.display = 'none';
+    
+    // 1. Hiện GIF 1 + Phát Rasen
+    const gif1Screen = document.getElementById('gif-screen');
+    gif1Screen.style.display = 'flex';
+    
+    rasenSound.currentTime = 0;
+    rasenSound.play();
+
+    // Gif 1 chạy trong 5 giây (hoặc tùy độ dài âm thanh rasen)
+    setTimeout(() => {
+        gif1Screen.style.display = 'none'; // Tắt GIF 1
+        rasenSound.pause(); // Tắt nhạc rasen
+        runGif2Sequence(); // Chuyển sang GIF 2
+    }, 5000); // 5000ms = 5 giây
+}
+
+function runGif2Sequence() {
+    const gif2Screen = document.getElementById('gif2-screen');
+    const textEl = document.getElementById('mockery-text');
+    gif2Screen.style.display = 'flex';
+
+    // Logic hiện chữ "Lêu lêu" 3 lần, mỗi lần 2 giây
+    let count = 0;
+    const maxCount = 3;
+
+    function loopText() {
+        if (count < maxCount) {
+            // Hiện chữ
+            textEl.style.display = 'block';
+            
+            // Đợi 2 giây
+            setTimeout(() => {
+                textEl.style.display = 'none'; // Ẩn chữ
+                
+                // Đợi 0.5s nghỉ trước khi hiện lại (để tạo hiệu ứng nhấp nháy rõ hơn)
+                setTimeout(() => {
+                    count++;
+                    loopText(); // Lặp lại
+                }, 500); 
+
+            }, 2000); // Thời gian hiện chữ: 2 giây
+        } else {
+            // Đã xong 3 lần -> Chuyển sang màn hình chính
+            gif2Screen.style.display = 'none';
+            showContentSequence();
+        }
+    }
+    
+    // Bắt đầu vòng lặp chữ ngay khi GIF 2 hiện
+    loopText();
+}
+
+// --- LOGIC MÀN HÌNH CHÍNH (Cũ) ---
+function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex';
 
-    // 1.5s đầu ảnh ở giữa, sau đó trượt sang trái
+    // 1.5s đầu ảnh ở giữa
     setTimeout(() => {
         document.querySelector('.image-section').classList.add('move-left');
 
-        // Đợi trượt xong -> Hiện chữ
+        // Trượt xong -> Hiện chữ
         setTimeout(() => {
             runTextAnimation();
         }, 1200); 
@@ -101,16 +155,14 @@ function runTextAnimation() {
 
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
-            // Tính thời gian đọc cơ bản
+            // Tốc độ đọc
             const plainText = p.innerText || p.textContent;
             let readingTime = 1000 + (plainText.length * 60);
             if (readingTime < 1500) readingTime = 1500;
 
             if (lineIndex === messageLines.length - 1) {
-                // --- XỬ LÝ DÒNG CUỐI CÙNG ---
+                // Dòng cuối
                 startFireworks();
-
-                // Chỉ đợi 2 giây tĩnh (bỏ qua readingTime dài dòng) để hiệu ứng kết thúc nhanh hơn
                 setTimeout(() => {
                     endSequence();
                 }, 2000); 
@@ -124,18 +176,11 @@ function runTextAnimation() {
 }
 
 function endSequence() {
-    console.log("Ending sequence started"); // Kiểm tra log
-    
-    // 1. Làm mờ chữ
     const textSection = document.querySelector('.text-section');
     textSection.classList.add('fade-out');
 
-    // 2. Đợi đúng 2 giây (thời gian transition opacity) rồi di chuyển ảnh
     setTimeout(() => {
-        console.log("Moving image back to center");
         const imgSection = document.querySelector('.image-section');
-        
-        // Gỡ bỏ class move-left -> CSS sẽ tự transition left từ 25% về 50%
         imgSection.classList.remove('move-left');
     }, 2000);
 }

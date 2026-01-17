@@ -1,7 +1,7 @@
 const SECRET_PASS = "CT011002"; 
 let nhacMaSound, beepSound;
 
-// Nội dung tin nhắn
+// Danh sách tin nhắn (Ngày tháng ở đầu tiên)
 const messageLines = [
     "<span class='date-highlight'>- 08/01/2026 -</span>",
     "Dù không được đúng ngày cho lắm, nhưng coi như là quà sinh nhật muộn nhe. Thì là, hãy xem đây là 1 món quà tinh thần, của 1 ai đó trên thế giới này, not me !",
@@ -32,7 +32,7 @@ function checkPass() {
         startOverlay.style.display = 'flex';
         
         nhacMaSound.volume = 0.8;
-        nhacMaSound.play().catch(() => console.log("Cần tương tác để phát nhạc"));
+        nhacMaSound.play().catch(() => console.log("User interact needed"));
 
         startOverlay.addEventListener('click', () => {
             startOverlay.style.display = 'none';
@@ -51,18 +51,13 @@ function runCountdown() {
     countdownScreen.style.display = 'flex';
     let count = 5;
 
-    // Hàm chạy mỗi giây
-    const tick = () => {
+    // Hàm chạy từng nhịp
+    const runTick = () => {
         numberEl.textContent = count;
-        
-        // --- FIX LỖI VÒNG XOAY ---
-        // Xóa class cũ
+
+        // --- BẮT BUỘC TRÌNH DUYỆT VẼ LẠI ANIMATION ---
         circleEl.classList.remove('animate-reverse');
-        
-        // Buộc trình duyệt vẽ lại (Reflow) để nhận diện thay đổi
-        void circleEl.offsetWidth; 
-        
-        // Thêm lại class để chạy animation mới
+        void circleEl.offsetWidth; // Force Reflow (Hack quan trọng)
         circleEl.classList.add('animate-reverse');
 
         if(count > 0) {
@@ -71,16 +66,15 @@ function runCountdown() {
         }
 
         count--;
-        
+
         if (count < 0) {
             clearInterval(timer);
-            // Chờ 1s cho số 0 chạy xong animation
-            setTimeout(showContentSequence, 1000); 
+            setTimeout(showContentSequence, 1000); // Đợi 1s cho số 0 chạy xong
         }
     };
 
-    tick(); // Chạy ngay lập tức cho số 5
-    const timer = setInterval(tick, 1000); // Lặp lại cho 4, 3, 2, 1, 0
+    runTick(); // Chạy ngay số 5
+    const timer = setInterval(runTick, 1000); // Lặp lại
 }
 
 function showContentSequence() {
@@ -88,16 +82,16 @@ function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex';
 
-    // 1. Ảnh xuất hiện ở giữa (mặc định)
-    // Đợi 1.5 giây, rồi di chuyển ảnh sang trái
+    // 1. Ảnh xuất hiện ở giữa (Mặc định CSS đã set ở giữa)
+    
+    // 2. Sau 1.5s -> Trượt sang trái
     setTimeout(() => {
-        const imgSection = document.querySelector('.image-section');
-        imgSection.classList.add('move-left');
+        document.querySelector('.image-section').classList.add('move-left');
 
-        // Sau khi ảnh trượt xong, bắt đầu hiện chữ
+        // 3. Sau khi trượt xong -> Bắt đầu hiện chữ
         setTimeout(() => {
             runTextAnimation();
-        }, 1000); 
+        }, 1200); 
     }, 1500);
 }
 
@@ -111,37 +105,38 @@ function runTextAnimation() {
             p.innerHTML = messageLines[lineIndex];
             container.appendChild(p);
 
+            // Timeout nhỏ để kích hoạt CSS transition opacity
             setTimeout(() => {
                 p.classList.add('show-text');
             }, 50);
 
             container.scrollTop = container.scrollHeight;
 
-            // --- KIỂM TRA DÒNG CUỐI CÙNG ---
+            // KIỂM TRA NẾU LÀ DÒNG CUỐI CÙNG
             if (lineIndex === messageLines.length - 1) {
-                // 1. Bắn pháo hoa ngay lập tức
-                startFireworks(); 
-                
-                // 2. Sau 2 giây: Chữ mờ đi + Ảnh về giữa
+                // Bắn pháo hoa
+                startFireworks();
+
+                // Đợi 2 giây -> Mờ chữ -> Ảnh về giữa
                 setTimeout(() => {
-                    // Chữ mờ dần
-                    document.querySelector('.text-section').classList.add('fade-out-text');
+                    // Mờ khung chữ
+                    document.querySelector('.text-section').classList.add('fade-out');
                     
-                    // Ảnh trượt về trung tâm (bằng cách xóa class move-left)
+                    // Ảnh trượt về giữa (Bằng cách xóa class move-left)
+                    // CSS sẽ tự động transition về vị trí mặc định (giữa)
                     document.querySelector('.image-section').classList.remove('move-left');
                 }, 2000);
             }
 
             lineIndex++;
-            // TỰ CHỈNH THỜI GIAN HIỆN TỪNG DÒNG Ở ĐÂY (đang để 2500ms = 2.5s)
+            // TỰ CHỈNH THỜI GIAN HIỆN DÒNG (ms)
             setTimeout(showNextLine, 2500); 
         }
     }
-
     showNextLine();
 }
 
-// --- LOGIC PHÁO HOA ---
+// --- PHÁO HOA ---
 function startFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -151,26 +146,21 @@ function startFireworks() {
     let particles = [];
 
     function createParticle(x, y) {
-        const particleCount = 40;
+        const particleCount = 50;
         for (let i = 0; i < particleCount; i++) {
             particles.push({
-                x: x,
-                y: y,
+                x: x, y: y,
                 color: `hsl(${Math.random() * 360}, 100%, 50%)`,
                 radius: Math.random() * 3 + 1,
-                velocity: {
-                    x: (Math.random() - 0.5) * 8,
-                    y: (Math.random() - 0.5) * 8
-                },
-                life: 120, // Thời gian tồn tại
-                alpha: 1
+                velocity: { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 },
+                life: 150, alpha: 1
             });
         }
     }
 
     function animate() {
         requestAnimationFrame(animate);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)'; // Tạo đuôi mờ
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         particles.forEach((p, index) => {
@@ -181,23 +171,17 @@ function startFireworks() {
                 ctx.globalAlpha = p.alpha;
                 ctx.fill();
                 ctx.globalAlpha = 1;
-
-                p.x += p.velocity.x;
-                p.y += p.velocity.y;
-                p.life--;
-                p.alpha -= 0.01;
+                p.x += p.velocity.x; p.y += p.velocity.y;
+                p.life--; p.alpha -= 0.01;
             } else {
                 particles.splice(index, 1);
             }
         });
 
-        // Tự động bắn ngẫu nhiên liên tục
-        if (Math.random() < 0.08) {
+        if (Math.random() < 0.1) {
             createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.6);
         }
     }
-    
     animate();
-    // Bắn mở màn
     createParticle(canvas.width / 2, canvas.height / 2);
 }

@@ -1,17 +1,48 @@
 const SECRET_PASS = "CT011002"; 
 let nhacMaSound, beepSound, rasenSound, phanthanSound, cuoiSound;
 
+// --- CẤU HÌNH NỘI DUNG VÀ THỜI GIAN (time: mili-giây) ---
 const messageLines = [
-    "<span class='date-highlight'>- 08/01/2026 -</span>",
-    "Dù không được đúng ngày cho lắm, nhưng coi như là quà sinh nhật muộn nhe. Thì là, hãy xem đây là 1 món quà tinh thần, của 1 ai đó trên thế giới này, not me !",
-    "Không biết ngày hôm nay của bạn như thế nào, sẽ có chuyện vui, chuyện buồn, tức dzận, hay chỉ là 1 ngày bình thường như bao ngày ? Có nhận được những lời chúc mừng từ những người mình yêu thương và trân trọng ?",
-    "Dù có chuyện gì đi nữa, sau tất cả, đến thời điểm hiện tại, bạn hãy thật vui vẻ và hạnh phúc nhé ! Vì những điều đã trải qua, vì khi đọc những dòng này, bạn vẫn có thể mỉm cười, có thể khóc, có thể ở bên những người mình yêu quý và chia sẻ những cảm xúc ấy !",
-    "Có thể là ngày mai, 1 tháng, 1 năm, 10 năm hay 20 năm nữa, tất cả chúng ta sẽ còn ở bên nhau, có thể không, có thể sẽ quên đi nhau theo dòng thời gian, nhưng với mình, những điều chúng ta đã từng, những kỷ niệm đó sẽ không bị lãng quên và sẽ mãi ở 1 góc của não bộ. (gì chứ tui say đắm trong quá khứ lắm, vui buồn gì cũng nhớ)",
-    "Nếu sau này không ai chúc mừng sinh nhật bạn nữa, thề với bạn là sẽ luôn có 1 người ghi nhớ điều đó, chỉ cần . 1 cái là sẽ có lời chúc tới ngay và luôn ! (thặc ra là nhớ hết, tại tùy hoàn cảnh có chúc được hay ko thoai)",
-    "Nãy giờ nói cũng hơi nhiều, nhưng chúc thì cũng như mọi lần. Cầu mong cho bạn luôn được bình an và khỏe mạnh (à thì sức khỏe thôi chứ tiền tài học hành tự thân lo nhóe, ngắn gọn cho nó linh)",
-    "Bonus: thật ra tụi mình ko có hình nào đẹp hết, nên mò trên trang cá nhân mới có hình",
-    "<span class='highlight-hpbd'>Hết rồi đó. SINH NHỰT ZUI ZẺ NHE <3</span>",
-    "<span class='highlight-sign'>maxinhdep</span>"
+    { 
+        text: "<span class='date-highlight'>- 08/01/2026 -</span>", 
+        time: 2000 // 2 giây
+    },
+    { 
+        text: "Dù không được đúng ngày cho lắm, nhưng coi như là quà sinh nhật muộn nhe. Thì là, hãy xem đây là 1 món quà tinh thần, của 1 ai đó trên thế giới này, not me !", 
+        time: 5000 // 5 giây
+    },
+    { 
+        text: "Không biết ngày hôm nay của bạn như thế nào, sẽ có chuyện vui, chuyện buồn, tức dzận, hay chỉ là 1 ngày bình thường như bao ngày ? Có nhận được những lời chúc mừng từ những người mình yêu thương và trân trọng ?", 
+        time: 8000 // 8 giây
+    },
+    { 
+        text: "Dù có chuyện gì đi nữa, sau tất cả, đến thời điểm hiện tại, bạn hãy thật vui vẻ và hạnh phúc nhé ! Vì những điều đã trải qua, vì khi đọc những dòng này, bạn vẫn có thể mỉm cười, có thể khóc, có thể ở bên những người mình yêu quý và chia sẻ những cảm xúc ấy !", 
+        time: 10000 // 10 giây
+    },
+    { 
+        text: "Có thể là ngày mai, 1 tháng, 1 năm, 10 năm hay 20 năm nữa, tất cả chúng ta sẽ còn ở bên nhau, có thể không, có thể sẽ quên đi nhau theo dòng thời gian, nhưng với mình, những điều chúng ta đã từng, những kỷ niệm đó sẽ không bị lãng quên và sẽ mãi ở 1 góc của não bộ. (gì chứ tui say đắm trong quá khứ lắm, vui buồn gì cũng nhớ)", 
+        time: 15000 // 15 giây
+    },
+    { 
+        text: "Nếu sau này không ai chúc mừng sinh nhật bạn nữa, thề với bạn là sẽ luôn có 1 người ghi nhớ điều đó, chỉ cần . 1 cái là sẽ có lời chúc tới ngay và luôn ! (thặc ra là nhớ hết, tại tùy hoàn cảnh có chúc được hay ko thoai)", 
+        time: 8000 // 8 giây
+    },
+    { 
+        text: "Nãy giờ nói cũng hơi nhiều, nhưng chúc thì cũng như mọi lần. Cầu mong cho bạn luôn được bình an và khỏe mạnh (à thì sức khỏe thôi chứ tiền tài học hành tự thân lo nhóe, ngắn gọn cho nó linh)", 
+        time: 6000 // 6 giây
+    },
+    { 
+        text: "Bonus: thật ra tụi mình ko có hình nào đẹp hết, nên mò trên trang cá nhân mới có hình", 
+        time: 5000 // 5 giây
+    },
+    { 
+        text: "<span class='highlight-hpbd'>Hết rồi đó. SINH NHỰT ZUI ZẺ NHE <3</span>", 
+        time: 4000 // 4 giây
+    },
+    { 
+        text: "<span class='highlight-sign'>maxinhdep</span>", 
+        time: 3000 // 3 giây
+    }
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -181,8 +212,10 @@ function runTextAnimation() {
 
     function showNextLine() {
         if (lineIndex < messageLines.length) {
+            const currentLine = messageLines[lineIndex]; // Lấy object {text, time}
+            
             const p = document.createElement('p');
-            p.innerHTML = messageLines[lineIndex];
+            p.innerHTML = currentLine.text; // Lấy nội dung chữ
             container.appendChild(p);
             
             // Auto Scroll
@@ -193,19 +226,18 @@ function runTextAnimation() {
 
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
-            const plainText = p.innerText || p.textContent;
-            let readingTime = 1000 + (plainText.length * 60);
-            if (readingTime < 1500) readingTime = 1500;
+            // Sử dụng thời gian đã cài đặt trong object
+            const readingTime = currentLine.time;
 
             if (lineIndex === messageLines.length - 1) {
                 // KHI DÒNG CUỐI XUẤT HIỆN:
                 // 1. Bắn pháo hoa NGAY LẬP TỨC
                 startFireworks(); 
                 
-                // 2. Đợi người dùng đọc xong dòng cuối (khoảng 3s) thì mới làm mờ chữ
+                // 2. Đợi hết thời gian đọc dòng cuối rồi mới kết thúc
                 setTimeout(() => {
                     endSequence();
-                }, readingTime + 1500); 
+                }, readingTime); 
             } else {
                 lineIndex++;
                 setTimeout(showNextLine, readingTime);
@@ -223,13 +255,12 @@ function endSequence() {
     textSection.classList.add('fade-out');
 
     // 2. Đợi một chút (1.5s) để chữ mờ đi, sau đó ảnh mới trượt về giữa
-    // Điều này tạo hiệu ứng: Chữ biến mất -> Ảnh mới từ từ trôi về
     setTimeout(() => {
         imgSection.classList.remove('move-left'); 
     }, 1500);
 }
 
-// --- PHÁO HOA (ĐÃ SỬA LỖI MÀN HÌNH ĐEN) ---
+// --- PHÁO HOA ---
 function startFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
@@ -243,7 +274,7 @@ function startFireworks() {
         for (let i = 0; i < particleCount; i++) {
             particles.push({
                 x: x, y: y,
-                color: `hsl(${Math.random() * 360}, 100%, 70%)`, // Màu sáng hơn chút cho đẹp trên nền tối
+                color: `hsl(${Math.random() * 360}, 100%, 70%)`,
                 radius: Math.random() * 3 + 1,
                 velocity: { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 },
                 life: 150, alpha: 1
@@ -254,14 +285,11 @@ function startFireworks() {
     function animate() {
         requestAnimationFrame(animate);
         
-        // --- SỬA LỖI MÀN HÌNH ĐEN TẠI ĐÂY ---
-        // Thay vì tô màu đen (fillRect), ta dùng destination-out để XÓA DẦN canvas,
-        // làm lộ ra ảnh nền (background) phía dưới.
+        // Dùng destination-out để xóa nền (giữ trong suốt)
         ctx.globalCompositeOperation = 'destination-out';
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Độ mờ của đuôi pháo hoa
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Trả lại chế độ vẽ bình thường đè lên
         ctx.globalCompositeOperation = 'source-over';
 
         particles.forEach((p, index) => {
@@ -274,12 +302,10 @@ function startFireworks() {
         });
         
         if (Math.random() < 0.1) { 
-            // Bắn ngẫu nhiên ở khu vực phía trên để không che mặt trong ảnh
             createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.5); 
         }
     }
     
     animate();
-    // Bắn phát đầu tiên ngay tâm
     createParticle(canvas.width / 2, canvas.height / 3);
 }

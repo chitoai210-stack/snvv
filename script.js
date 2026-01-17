@@ -198,13 +198,14 @@ function runTextAnimation() {
             if (readingTime < 1500) readingTime = 1500;
 
             if (lineIndex === messageLines.length - 1) {
-                // KHI DÒNG CUỐI XUẤT HIỆN -> Bắn pháo hoa
+                // KHI DÒNG CUỐI XUẤT HIỆN:
+                // 1. Bắn pháo hoa NGAY LẬP TỨC
                 startFireworks(); 
                 
-                // Đợi đọc xong dòng cuối (khoảng 2.5s) rồi kết thúc cảnh
+                // 2. Đợi người dùng đọc xong dòng cuối (khoảng 3s) thì mới làm mờ chữ
                 setTimeout(() => {
                     endSequence();
-                }, readingTime + 1000); 
+                }, readingTime + 1500); 
             } else {
                 lineIndex++;
                 setTimeout(showNextLine, readingTime);
@@ -218,40 +219,51 @@ function endSequence() {
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
 
-    // Mờ chữ
+    // 1. Mờ chữ trước
     textSection.classList.add('fade-out');
 
-    // THAY ĐỔI QUAN TRỌNG: 
-    // Cho ảnh trượt về giữa NGAY LẬP TỨC (chỉ delay 0.1s cho mượt) 
-    // thay vì đợi 1000ms như trước.
+    // 2. Đợi một chút (1.5s) để chữ mờ đi, sau đó ảnh mới trượt về giữa
+    // Điều này tạo hiệu ứng: Chữ biến mất -> Ảnh mới từ từ trôi về
     setTimeout(() => {
-        imgSection.classList.remove('move-left'); // CSS sẽ tự động transition về giữa
-    }, 100);
+        imgSection.classList.remove('move-left'); 
+    }, 1500);
 }
 
-// --- PHÁO HOA ---
+// --- PHÁO HOA (ĐÃ SỬA LỖI MÀN HÌNH ĐEN) ---
 function startFireworks() {
     const canvas = document.getElementById('fireworks');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    
     let particles = [];
+    
     function createParticle(x, y) {
         const particleCount = 50;
         for (let i = 0; i < particleCount; i++) {
             particles.push({
                 x: x, y: y,
-                color: `hsl(${Math.random() * 360}, 100%, 50%)`,
+                color: `hsl(${Math.random() * 360}, 100%, 70%)`, // Màu sáng hơn chút cho đẹp trên nền tối
                 radius: Math.random() * 3 + 1,
                 velocity: { x: (Math.random() - 0.5) * 8, y: (Math.random() - 0.5) * 8 },
                 life: 150, alpha: 1
             });
         }
     }
+
     function animate() {
         requestAnimationFrame(animate);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+        
+        // --- SỬA LỖI MÀN HÌNH ĐEN TẠI ĐÂY ---
+        // Thay vì tô màu đen (fillRect), ta dùng destination-out để XÓA DẦN canvas,
+        // làm lộ ra ảnh nền (background) phía dưới.
+        ctx.globalCompositeOperation = 'destination-out';
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // Độ mờ của đuôi pháo hoa
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Trả lại chế độ vẽ bình thường đè lên
+        ctx.globalCompositeOperation = 'source-over';
+
         particles.forEach((p, index) => {
             if (p.life > 0) {
                 ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
@@ -260,8 +272,14 @@ function startFireworks() {
                 p.life--; p.alpha -= 0.01;
             } else { particles.splice(index, 1); }
         });
-        if (Math.random() < 0.1) { createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.6); }
+        
+        if (Math.random() < 0.1) { 
+            // Bắn ngẫu nhiên ở khu vực phía trên để không che mặt trong ảnh
+            createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.5); 
+        }
     }
+    
     animate();
-    createParticle(canvas.width / 2, canvas.height / 2);
+    // Bắn phát đầu tiên ngay tâm
+    createParticle(canvas.width / 2, canvas.height / 3);
 }

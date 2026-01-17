@@ -31,10 +31,8 @@ function checkPass() {
         document.getElementById('password-screen').style.display = 'none';
         const startOverlay = document.getElementById('start-overlay');
         startOverlay.style.display = 'flex';
-        
         nhacMaSound.volume = 0.8;
         nhacMaSound.play().catch(() => console.log("Audio interact needed"));
-
         startOverlay.addEventListener('click', () => {
             startOverlay.style.display = 'none';
             runCountdown();
@@ -48,20 +46,16 @@ function runCountdown() {
     const countdownScreen = document.getElementById('countdown-screen');
     const numberEl = document.getElementById('countdown-number');
     const circleEl = document.getElementById('circle-effect');
-    
     countdownScreen.style.display = 'flex';
     let count = 5;
 
     const runTick = () => {
         numberEl.textContent = count;
-        
         circleEl.classList.remove('animate-reverse');
         void circleEl.offsetWidth; 
         setTimeout(() => { circleEl.classList.add('animate-reverse'); }, 10);
-
         beepSound.currentTime = 0;
         beepSound.play();
-
         if (count === 0) {
             setTimeout(runKageSequence, 1000);
             return;
@@ -72,55 +66,42 @@ function runCountdown() {
     runTick();
 }
 
-// --- 1. KAGE BUSHIN ---
 function runKageSequence() {
     document.getElementById('countdown-screen').style.display = 'none';
     const kageScreen = document.getElementById('kage-screen');
     kageScreen.style.display = 'flex';
-
     phanthanSound.currentTime = 0;
     phanthanSound.play();
-
     setTimeout(() => {
         kageScreen.style.display = 'none';
         runGifSequence(); 
     }, 2500); 
 }
 
-// --- 2. VIDEO GIF RASEN ---
 function runGifSequence() {
     const gif1Screen = document.getElementById('gif-screen');
     gif1Screen.style.display = 'flex';
-    
     // TUA ĐẾN GIÂY THỨ 5
     rasenSound.currentTime = 5; 
     rasenSound.play();
-
     setTimeout(() => {
         gif1Screen.style.display = 'none'; 
         rasenSound.pause();
         runGif2Sequence(); 
-    }, 5000); // Phát trong 5s (từ giây 5 đến giây 10 của bài nhạc)
+    }, 5000);
 }
 
-// --- 3. GIF LÊU LÊU ---
 function runGif2Sequence() {
     const gif2Screen = document.getElementById('gif2-screen');
     const textEl = document.getElementById('mockery-text');
     gif2Screen.style.display = 'flex';
-
-    let count = 0;
-    const maxCount = 3;
-
+    let count = 0; const maxCount = 3;
     function loopText() {
         if (count < maxCount) {
             textEl.style.display = 'block';
             setTimeout(() => {
                 textEl.style.display = 'none'; 
-                setTimeout(() => {
-                    count++;
-                    loopText(); 
-                }, 500); 
+                setTimeout(() => { count++; loopText(); }, 500); 
             }, 2000); 
         } else {
             gif2Screen.style.display = 'none';
@@ -130,7 +111,7 @@ function runGif2Sequence() {
     loopText();
 }
 
-// --- 4. MÀN HÌNH CHÍNH (LOGIC MỚI) ---
+// --- MÀN HÌNH CHÍNH (ĐÃ UPDATE THEO CSS MỚI) ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex'; 
@@ -138,24 +119,24 @@ function showContentSequence() {
     const imgSection = document.querySelector('.image-section');
     const textSection = document.querySelector('.text-section');
 
-    // BƯỚC 1: Hiện ảnh từ từ ở giữa (trong 2s)
+    // 1. Hiện ảnh từ từ ở giữa (fade in)
     setTimeout(() => {
         imgSection.classList.add('fade-in-center');
 
-        // BƯỚC 2: Sau khi hiện xong (2s) -> Trượt ảnh sang trái
+        // 2. Sau 2s -> Trượt ảnh sang trái
         setTimeout(() => {
             imgSection.classList.add('move-left');
             
-            // BƯỚC 3: Cùng lúc đó, chữ trượt từ phải vào
+            // 3. Cùng lúc đó, chữ trượt từ phải vào
             textSection.classList.add('slide-in-right');
 
-            // BƯỚC 4: Sau khi trượt xong (1.5s transition) -> Bắt đầu hiện chữ từng dòng
+            // 4. Bắt đầu hiện chữ từng dòng
             setTimeout(() => {
                 runTextAnimation();
             }, 1600); 
 
         }, 2500); 
-    }, 100); // Delay nhỏ để trình duyệt render
+    }, 100); 
 }
 
 function runTextAnimation() {
@@ -167,7 +148,6 @@ function runTextAnimation() {
             const p = document.createElement('p');
             p.innerHTML = messageLines[lineIndex];
             container.appendChild(p);
-
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
             const plainText = p.innerText || p.textContent;
@@ -177,9 +157,7 @@ function runTextAnimation() {
             if (lineIndex === messageLines.length - 1) {
                 // Dòng cuối
                 startFireworks();
-                setTimeout(() => {
-                    endSequence();
-                }, 2000); 
+                setTimeout(() => { endSequence(); }, 2000); 
             } else {
                 lineIndex++;
                 setTimeout(showNextLine, readingTime);
@@ -191,13 +169,15 @@ function runTextAnimation() {
 
 function endSequence() {
     const textSection = document.querySelector('.text-section');
-    
+    const imgSection = document.querySelector('.image-section');
+
     // Mờ chữ
+    textSection.classList.remove('slide-in-right'); // Trượt ngược ra hoặc mờ đi
     textSection.classList.add('fade-out');
 
+    // Đợi 2s rồi trả ảnh về giữa
     setTimeout(() => {
-        const imgSection = document.querySelector('.image-section');
-        // Ảnh trượt về giữa
+        // Bỏ class move-left -> CSS sẽ tự trả về left: 50% và transform: translate(-50%, -50%)
         imgSection.classList.remove('move-left');
     }, 2000);
 }
@@ -209,7 +189,6 @@ function startFireworks() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     let particles = [];
-
     function createParticle(x, y) {
         const particleCount = 50;
         for (let i = 0; i < particleCount; i++) {
@@ -222,30 +201,19 @@ function startFireworks() {
             });
         }
     }
-
     function animate() {
         requestAnimationFrame(animate);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         particles.forEach((p, index) => {
             if (p.life > 0) {
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-                ctx.fillStyle = p.color;
-                ctx.globalAlpha = p.alpha;
-                ctx.fill();
-                ctx.globalAlpha = 1;
-                p.x += p.velocity.x; p.y += p.velocity.y;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fillStyle = p.color; ctx.globalAlpha = p.alpha; ctx.fill();
+                ctx.globalAlpha = 1; p.x += p.velocity.x; p.y += p.velocity.y;
                 p.life--; p.alpha -= 0.01;
-            } else {
-                particles.splice(index, 1);
-            }
+            } else { particles.splice(index, 1); }
         });
-
-        if (Math.random() < 0.1) {
-            createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.6);
-        }
+        if (Math.random() < 0.1) { createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.6); }
     }
     animate();
     createParticle(canvas.width / 2, canvas.height / 2);

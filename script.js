@@ -1,7 +1,7 @@
 const SECRET_PASS = "CT011002"; 
 let nhacMaSound, beepSound;
 
-// Danh sách tin nhắn (Ngày tháng ở đầu tiên)
+// Danh sách tin nhắn
 const messageLines = [
     "<span class='date-highlight'>- 08/01/2026 -</span>",
     "Dù không được đúng ngày cho lắm, nhưng coi như là quà sinh nhật muộn nhe. Thì là, hãy xem đây là 1 món quà tinh thần, của 1 ai đó trên thế giới này, not me !",
@@ -51,30 +51,33 @@ function runCountdown() {
     countdownScreen.style.display = 'flex';
     let count = 5;
 
-    // Hàm chạy từng nhịp
+    // Hàm thực thi 1 nhịp đếm
     const runTick = () => {
         numberEl.textContent = count;
 
-        // --- BẮT BUỘC TRÌNH DUYỆT VẼ LẠI ANIMATION ---
+        // Reset Animation để chạy lại vòng tròn
         circleEl.classList.remove('animate-reverse');
-        void circleEl.offsetWidth; // Force Reflow (Hack quan trọng)
+        void circleEl.offsetWidth; // Force Reflow
         circleEl.classList.add('animate-reverse');
 
-        if(count > 0) {
-            beepSound.currentTime = 0;
-            beepSound.play();
+        // Play sound
+        beepSound.currentTime = 0;
+        beepSound.play();
+
+        // Kiểm tra điều kiện dừng
+        if (count === 0) {
+            // Nếu là 0, đợi chạy hết 1s của số 0 rồi mới chuyển cảnh
+            setTimeout(showContentSequence, 1000);
+            return; 
         }
 
         count--;
-
-        if (count < 0) {
-            clearInterval(timer);
-            setTimeout(showContentSequence, 1000); // Đợi 1s cho số 0 chạy xong
-        }
+        // Gọi lại hàm sau 1 giây
+        setTimeout(runTick, 1000);
     };
 
-    runTick(); // Chạy ngay số 5
-    const timer = setInterval(runTick, 1000); // Lặp lại
+    // Bắt đầu chạy
+    runTick();
 }
 
 function showContentSequence() {
@@ -82,13 +85,11 @@ function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex';
 
-    // 1. Ảnh xuất hiện ở giữa (Mặc định CSS đã set ở giữa)
-    
-    // 2. Sau 1.5s -> Trượt sang trái
+    // 1.5s đầu ảnh ở giữa
     setTimeout(() => {
         document.querySelector('.image-section').classList.add('move-left');
 
-        // 3. Sau khi trượt xong -> Bắt đầu hiện chữ
+        // Sau khi trượt xong (1.2s transition) -> Hiện chữ
         setTimeout(() => {
             runTextAnimation();
         }, 1200); 
@@ -105,35 +106,50 @@ function runTextAnimation() {
             p.innerHTML = messageLines[lineIndex];
             container.appendChild(p);
 
-            // Timeout nhỏ để kích hoạt CSS transition opacity
+            // Hiện text
             setTimeout(() => {
                 p.classList.add('show-text');
             }, 50);
 
-            container.scrollTop = container.scrollHeight;
+            // Auto scroll xuống nếu text dài
+            // container.scrollTop = container.scrollHeight; // (Tùy chọn, vì layout mới đã fix height)
 
-            // KIỂM TRA NẾU LÀ DÒNG CUỐI CÙNG
+            // --- TÍNH TOÁN THỜI GIAN ĐỌC ---
+            // Lấy nội dung text thuần (bỏ thẻ html) để tính độ dài
+            const plainText = p.innerText || p.textContent;
+            const length = plainText.length;
+            
+            // Công thức: 1s cơ bản + 60ms cho mỗi ký tự. Tối thiểu 1.5s
+            let readingTime = 1000 + (length * 60);
+            if (readingTime < 1500) readingTime = 1500;
+
+            // Kiểm tra dòng cuối cùng
             if (lineIndex === messageLines.length - 1) {
-                // Bắn pháo hoa
-                startFireworks();
+                startFireworks(); // Bắn pháo hoa ngay khi hiện dòng cuối
 
-                // Đợi 2 giây -> Mờ chữ -> Ảnh về giữa
+                // Đợi người dùng đọc xong dòng cuối (readingTime) + thêm 2s tĩnh
                 setTimeout(() => {
-                    // Mờ khung chữ
-                    document.querySelector('.text-section').classList.add('fade-out');
-                    
-                    // Ảnh trượt về giữa (Bằng cách xóa class move-left)
-                    // CSS sẽ tự động transition về vị trí mặc định (giữa)
-                    document.querySelector('.image-section').classList.remove('move-left');
-                }, 2000);
+                    endSequence();
+                }, readingTime + 2000);
+            } else {
+                // Nếu chưa phải dòng cuối, đợi readingTime rồi hiện dòng tiếp
+                lineIndex++;
+                setTimeout(showNextLine, readingTime);
             }
-
-            lineIndex++;
-            // TỰ CHỈNH THỜI GIAN HIỆN DÒNG (ms)
-            setTimeout(showNextLine, 2500); 
         }
     }
     showNextLine();
+}
+
+function endSequence() {
+    // 1. Mờ toàn bộ khung chữ
+    document.querySelector('.text-section').classList.add('fade-out');
+    
+    // 2. Ảnh trượt về giữa
+    const imgSection = document.querySelector('.image-section');
+    imgSection.classList.remove('move-left');
+    
+    // Pháo hoa vẫn tiếp tục bắn (do hàm animate là loop vô tận)
 }
 
 // --- PHÁO HOA ---
@@ -160,6 +176,7 @@ function startFireworks() {
 
     function animate() {
         requestAnimationFrame(animate);
+        // Tạo hiệu ứng đuôi mờ
         ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -178,10 +195,13 @@ function startFireworks() {
             }
         });
 
+        // Tự động bắn ngẫu nhiên
         if (Math.random() < 0.1) {
             createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.6);
         }
     }
     animate();
+    
+    // Bắn phát đầu tiên ở giữa
     createParticle(canvas.width / 2, canvas.height / 2);
 }

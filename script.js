@@ -4,8 +4,7 @@ let nhacMaSound, beepSound, rasenSound, phanthanSound, cuoiSound;
 const messageLines = [
     "<span class='date-highlight'>- 08/01/2026 -</span>",
     "Dù không được đúng ngày cho lắm, nhưng coi như là quà sinh nhật muộn nhe. Thì là, hãy xem đây là 1 món quà tinh thần, của 1 ai đó trên thế giới này, not me !",
-    "Thật ra là đó giờ cảm giác cũng nhận nhiều quà có ý nghĩa của bạn Minh Em nhưng mà cũng không có gì để tặng lại những dịp như thế này !",
-    "Nên là mong sao",
+    "Không biết ngày hôm nay của bạn như thế nào, sẽ có chuyện vui, chuyện buồn, tức dzận, hay chỉ là 1 ngày bình thường như bao ngày ? Có nhận được những lời chúc mừng từ những người mình yêu thương và trân trọng ?",
     "Dù có chuyện gì đi nữa, sau tất cả, đến thời điểm hiện tại, bạn hãy thật vui vẻ và hạnh phúc nhé ! Vì những điều đã trải qua, vì khi đọc những dòng này, bạn vẫn có thể mỉm cười, có thể khóc, có thể ở bên những người mình yêu quý và chia sẻ những cảm xúc ấy !",
     "Có thể là ngày mai, 1 tháng, 1 năm, 10 năm hay 20 năm nữa, tất cả chúng ta sẽ còn ở bên nhau, có thể không, có thể sẽ quên đi nhau theo dòng thời gian, nhưng với mình, những điều chúng ta đã từng, những kỷ niệm đó sẽ không bị lãng quên và sẽ mãi ở 1 góc của não bộ. (gì chứ tui say đắm trong quá khứ lắm, vui buồn gì cũng nhớ)",
     "Nếu sau này không ai chúc mừng sinh nhật bạn nữa, thề với bạn là sẽ luôn có 1 người ghi nhớ điều đó, chỉ cần . 1 cái là sẽ có lời chúc tới ngay và luôn ! (thặc ra là nhớ hết, tại tùy hoàn cảnh có chúc được hay ko thoai)",
@@ -93,7 +92,6 @@ function runGifSequence() {
         rasenSound.pause();
         if(videoEl) videoEl.pause();
         
-        // Hiệu ứng trắng màn hình
         const whiteFlash = document.getElementById('white-flash');
         whiteFlash.style.display = 'block';
         whiteFlash.style.opacity = '1';
@@ -115,16 +113,12 @@ function runGif2Sequence() {
     gif2Screen.style.display = 'flex';
     cuoiSound.currentTime = 0; cuoiSound.play();
 
-    // 1. "Lêu lêu..."
     textEl.textContent = "Lêu lêu, đồ chưa có bồ";
     textEl.style.display = 'block';
 
     setTimeout(() => {
-        // 2. "Làm gì có..."
         textEl.textContent = "làm gì có anh nào mét 8 đâu";
-        
         setTimeout(() => {
-            // 3. Spam "Lêu lêu"
             textEl.style.display = 'none'; 
             let spamCount = 0;
             let spamInterval = setInterval(() => {
@@ -143,23 +137,19 @@ function runGif2Sequence() {
                 clearInterval(spamInterval);
                 const spams = document.querySelectorAll('.spam-item');
                 spams.forEach(el => el.remove());
-                
-                // 4. QUEEEEE
                 queEl.style.display = 'block';
-                
                 setTimeout(() => {
                     queEl.style.display = 'none';
                     gif2Screen.style.display = 'none';
                     cuoiSound.pause();
                     showContentSequence();
                 }, 3000);
-
             }, 3000); 
         }, 2000); 
     }, 2000);
 }
 
-// --- MÀN HÌNH CHÍNH (ĐÃ UPDATE TIMING & ENDING) ---
+// --- MÀN HÌNH CHÍNH (ĐÃ SỬA AUTO SCROLL & ENDING) ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex'; 
@@ -167,25 +157,18 @@ function showContentSequence() {
     const imgSection = document.querySelector('.image-section');
     const textSection = document.querySelector('.text-section');
 
-    // MỚI: Đợi 2 giây (chỉ thấy nền hoa) rồi mới hiện ảnh
+    // Đợi 2s (chỉ có nền hoa)
     setTimeout(() => {
-        
-        // Hiện ảnh
-        imgSection.classList.add('fade-in-center');
-
-        // Sau khi hiện xong -> trượt
+        imgSection.classList.add('fade-in-center'); // Hiện ảnh giữa
         setTimeout(() => {
-            imgSection.classList.add('move-left');
-            textSection.classList.add('slide-in-right');
+            imgSection.classList.add('move-left'); // Trượt trái
+            textSection.classList.add('slide-in-right'); // Chữ vào
 
-            // Sau khi trượt xong -> hiện chữ
             setTimeout(() => {
                 runTextAnimation();
             }, 1600); 
-
         }, 2500); 
-
-    }, 2000); // <-- Delay 2s đầu tiên
+    }, 2000); 
 }
 
 function runTextAnimation() {
@@ -197,6 +180,13 @@ function runTextAnimation() {
             const p = document.createElement('p');
             p.innerHTML = messageLines[lineIndex];
             container.appendChild(p);
+            
+            // --- TỰ ĐỘNG CUỘN XUỐNG DƯỚI CÙNG (AUTO SCROLL) ---
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: 'smooth'
+            });
+
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
             const plainText = p.innerText || p.textContent;
@@ -204,12 +194,10 @@ function runTextAnimation() {
             if (readingTime < 1500) readingTime = 1500;
 
             if (lineIndex === messageLines.length - 1) {
-                // Dòng cuối cùng hiện lên
-                // 1. Bắn pháo hoa
-                startFireworks(); 
+                // Dòng cuối đã hiện xong
+                startFireworks(); // 1. Bắn pháo hoa
                 
-                // 2. Chuyển cảnh kết thúc (Ảnh về giữa)
-                // Đợi người dùng đọc xong dòng cuối (readingTime) + thêm 1s rồi mới thu về
+                // Đợi đọc xong dòng cuối + 1s -> Chạy kết thúc
                 setTimeout(() => {
                     endSequence();
                 }, readingTime + 1000); 
@@ -227,14 +215,14 @@ function endSequence() {
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
 
-    // Làm mờ chữ
-    textSection.classList.remove('slide-in-right'); 
+    // 2. Ẩn chữ đi
     textSection.classList.add('fade-out');
 
-    // Trả ảnh về giữa (trong khi pháo hoa vẫn bắn)
+    // 3. Trả ảnh về giữa (Pháo hoa vẫn đang bắn)
+    // Bằng cách xóa class move-left, CSS transition sẽ đưa nó về top 50%, left 50%
     setTimeout(() => {
         imgSection.classList.remove('move-left');
-    }, 2000);
+    }, 1000); 
 }
 
 // --- PHÁO HOA ---

@@ -19,31 +19,37 @@ body {
 #countdown-screen { z-index: 80; }
 #kage-screen { z-index: 78; } 
 #gif-screen { z-index: 75; }
-#gif2-screen { z-index: 70; }
+#gif2-screen { z-index: 70; overflow: hidden; /* Để chữ spam ko bị tràn */ }
 
-/* MÀN HÌNH CHÍNH: Thêm nền hoa */
+/* --- HIỆU ỨNG TRẮNG MÀN HÌNH --- */
+#white-flash {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: white;
+    z-index: 72; /* Cao hơn gif2 một chút */
+    pointer-events: none;
+    transition: opacity 1s ease-out;
+}
+
+/* --- MÀN HÌNH CHÍNH (Nền Hoa) --- */
 #content-screen { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 50;
-    /* Thêm ảnh nền full màn hình */
     background: url('hoa.jpeg') no-repeat center center;
-    background-size: cover; /* Phủ kín màn hình */
+    background-size: cover; 
 }
-/* Lớp phủ tối để chữ dễ đọc hơn trên nền hoa (tùy chọn) */
+/* Lớp phủ mờ toàn màn hình để làm dịu ảnh nền */
 #content-screen::before {
     content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6); /* Đen mờ 60% */
-    z-index: -1; /* Nằm dưới nội dung nhưng trên ảnh nền */
+    background: rgba(0, 0, 0, 0.4); /* Mờ nhẹ */
+    z-index: -1; 
 }
 
-/* Password Box */
+/* ... (Giữ nguyên các style Password, Timer, Kage Bushin như cũ) ... */
 .pass-box { text-align: center; border: 2px solid #00e5ff; padding: 40px; border-radius: 15px; background: rgba(0,0,0,0.8); }
 #pass-input { padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center; border-radius: 5px; }
 button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
 .pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; }
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
-
-/* Countdown */
 .timer-container { position: relative; width: 200px; height: 200px; }
 .timer-svg { transform: rotate(-90deg); }
 .circle-bg { fill: none; stroke: #333; stroke-width: 8; }
@@ -51,151 +57,94 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 .animate-reverse { animation: reverseTick 0.95s linear forwards; }
 @keyframes reverseTick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 565; } }
 #countdown-number { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 20px #00e5ff; }
-
-/* --- KAGE BUSHIN (HIỆU ỨNG KHÓI) --- */
-.kage-text {
-    font-family: 'Times New Roman', serif;
-    font-size: 40px; 
-    font-weight: bold;
-    color: transparent; /* Bắt đầu trong suốt */
-    
-    /* Animation khói */
-    animation: smokeEffect 4s ease-out forwards;
-}
-
-@keyframes smokeEffect {
-    0% {
-        opacity: 0;
-        text-shadow: 0 0 40px rgba(255, 255, 255, 0);
-        transform: scale(0.8);
-        filter: blur(10px); /* Mờ như khói */
-        color: rgba(255, 255, 255, 0);
-    }
-    50% {
-        opacity: 1;
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
-        filter: blur(2px);
-        color: rgba(255, 255, 255, 0.5);
-    }
-    100% {
-        opacity: 1;
-        text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-        transform: scale(1);
-        filter: blur(0);
-        color: rgba(255, 255, 255, 1); /* Hiện rõ */
-    }
-}
-
-/* GIF/Video */
+.kage-text { font-family: 'Times New Roman', serif; font-size: 40px; font-weight: bold; color: transparent; animation: smokeEffect 4s ease-out forwards; }
+@keyframes smokeEffect { 0% { opacity: 0; text-shadow: 0 0 40px rgba(255,255,255,0); transform: scale(0.8); filter: blur(10px); color: rgba(255,255,255,0); } 50% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.8); filter: blur(2px); color: rgba(255,255,255,0.5); } 100% { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.5); transform: scale(1); filter: blur(0); color: rgba(255,255,255,1); } }
 .fullscreen-gif { width: 100%; height: 100%; object-fit: cover; }
 
-/* Lêu lêu */
-#mockery-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; font-weight: bold; font-family: 'Montserrat', sans-serif; color: #ffd700; -webkit-text-stroke: 1px black; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); background: rgba(0, 0, 0, 0.7); padding: 20px 40px; border-radius: 10px; border: 2px solid #ffd700; display: none; }
-
-/* --- MÀN HÌNH CHÍNH --- */
-#fireworks { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
-
-.main-layout { 
-    width: 100vw; height: 100vh; 
-    position: relative; overflow: hidden;
+/* --- STYLE CHO PHẦN CÀ KHỊA (GIF 2) --- */
+#mockery-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-size: 28px; font-weight: bold; font-family: 'Montserrat', sans-serif;
+    color: #ffd700; -webkit-text-stroke: 1px black; 
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.7); padding: 20px 40px; 
+    border-radius: 10px; border: 2px solid #ffd700;
+    display: none; z-index: 10; text-align: center;
 }
 
-/* 1. PHẦN ẢNH */
-.image-wrapper {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 10;
-}
-
-.image-section {
+/* Chữ Spam "Lêu lêu" */
+.spam-item {
     position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    opacity: 0; 
-    transition: all 2s cubic-bezier(0.25, 1, 0.5, 1);
-    
-    height: auto; 
-    max-height: 75vh; /* Chiều cao tối đa */
-    width: auto; max-width: 45vw;
-    
+    font-size: 20px; font-weight: bold; color: #ff0055;
+    text-shadow: 1px 1px 0 #fff;
+    pointer-events: none; z-index: 5;
+    animation: popIn 0.3s ease-out forwards;
+}
+@keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+/* Chữ QUEEEE Khổng lồ */
+#que-text {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    /* Size 100 trong Word ~ 130px web */
+    font-size: 130px; 
+    font-weight: 900; color: white;
+    font-family: 'Arial Black', sans-serif;
+    text-shadow: 5px 5px 0 red, -2px -2px 0 black;
+    white-space: nowrap;
+    z-index: 20;
+    animation: shake 0.5s infinite;
+}
+@keyframes shake { 0% { transform: translate(-51%, -51%) rotate(0deg); } 25% { transform: translate(-49%, -49%) rotate(-2deg); } 50% { transform: translate(-51%, -49%) rotate(2deg); } 75% { transform: translate(-49%, -51%) rotate(-1deg); } 100% { transform: translate(-50%, -50%) rotate(0deg); } }
+
+/* --- MÀN HÌNH CHÍNH (LAYOUT) --- */
+#fireworks { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
+.main-layout { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+/* 1. Phần Ảnh */
+.image-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
+.image-section {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    opacity: 0; transition: all 2s cubic-bezier(0.25, 1, 0.5, 1);
+    height: auto; max-height: 75vh; width: auto; max-width: 45vw;
     display: flex; align-items: center; justify-content: center;
 }
-
-#ma-img {
-    max-height: 75vh; width: auto;
-    object-fit: contain;
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
+#ma-img { max-height: 75vh; width: auto; object-fit: contain; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); }
 .image-section.fade-in-center { opacity: 1; }
-.image-section.move-left {
-    left: 5%; 
-    transform: translate(0, -50%);
-}
+.image-section.move-left { left: 5%; transform: translate(0, -50%); }
 
-/* 2. PHẦN CHỮ (ĐÃ CHỈNH CĂN LỀ TRÊN) */
-.text-wrapper {
-    position: absolute; top: 0; right: 0; width: 50%; height: 100%;
-    z-index: 20; pointer-events: none; 
-}
-
+/* 2. Phần Chữ (Đã chỉnh màu cho nhẹ nhàng) */
+.text-wrapper { position: absolute; top: 0; right: 0; width: 50%; height: 100%; z-index: 20; pointer-events: none; }
 .text-section {
-    position: absolute;
-    /* Vị trí dọc: Căn giữa màn hình */
-    top: 50%; 
-    transform: translateY(-50%) translate(150%, 0); /* Vừa căn giữa dọc, vừa đẩy sang phải */
-    
-    left: 5%; 
-    width: 85%;
-    
-    /* CHIỀU CAO: Bắt buộc bằng chiều cao max của ảnh để căn ngang hàng */
-    height: 75vh; 
-    
-    opacity: 0;
-    transition: transform 1.5s ease-out, opacity 1.5s ease;
-    
-    display: flex; 
-    flex-direction: column; 
-    
-    /* QUAN TRỌNG: Căn nội dung lên trên cùng */
-    justify-content: flex-start; 
-    align-items: flex-start;
-    
+    position: absolute; top: 50%; transform: translateY(-50%) translate(150%, 0);
+    left: 5%; width: 85%; height: 75vh;
+    opacity: 0; transition: transform 2s ease-out, opacity 2s ease; /* Hiệu ứng chậm hơn: 2s */
+    display: flex; flex-direction: column; justify-content: flex-start; align-items: flex-start;
     pointer-events: auto; 
 }
+.text-section.slide-in-right { transform: translateY(-50%) translate(0, 0); opacity: 1; }
 
-/* Khi trượt vào: Chỉ reset X, giữ nguyên Y (-50%) */
-.text-section.slide-in-right {
-    transform: translateY(-50%) translate(0, 0); 
-    opacity: 1;
-}
-
-#message-container {
-    width: 100%;
-    font-family: 'Times New Roman', serif;
-    font-size: 21px; color: #fff;
-    overflow-y: auto;
-    max-height: 100%; /* Full chiều cao của text-section */
-    padding-right: 10px;
-}
-
-/* Scrollbar */
+#message-container { width: 100%; font-family: 'Times New Roman', serif; font-size: 21px; color: #fff; overflow-y: auto; max-height: 100%; padding-right: 10px; }
 #message-container::-webkit-scrollbar { width: 5px; }
-#message-container::-webkit-scrollbar-thumb { background: #00e5ff; border-radius: 10px; }
+#message-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.5); border-radius: 10px; }
 
+/* CHỈNH MÀU CHỮ TRANG CUỐI */
 #message-container p {
     line-height: 1.6; margin-bottom: 15px;
     opacity: 0; transform: translateY(20px);
-    transition: all 0.5s ease;
-    text-shadow: 1px 1px 2px black;
+    transition: all 1s ease; /* Hiện lên nhẹ nhàng */
+    
+    /* Style mới để dễ đọc trên nền hoa */
+    color: #fff; /* Màu chữ trắng */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8); /* Bóng chữ đậm */
+    background: rgba(0, 0, 0, 0.4); /* Nền đen mờ bao quanh từng đoạn */
+    padding: 10px 15px;
+    border-radius: 8px;
     text-align: justify;
 }
 #message-container p.show-text { opacity: 1; transform: translateY(0); }
 
-/* Font Styles */
-.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; display: block; margin-bottom: 10px;}
-.highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.5em; margin-top: 20px; display: block; text-align: right;}
-.highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.2em; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}
+.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; display: block; margin-bottom: 5px;}
+.highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.5em; margin-top: 10px; display: block; text-align: right;}
+.highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.2em; margin-top: 5px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}
 
 .fade-out { opacity: 0 !important; pointer-events: none; }

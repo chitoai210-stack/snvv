@@ -1,4 +1,4 @@
-/* --- THIẾT LẬP CHUNG --- */
+/* --- CƠ BẢN --- */
 body {
     margin: 0; padding: 0;
     width: 100vw; height: 100vh;
@@ -8,39 +8,43 @@ body {
     color: white;
 }
 
-/* --- MÀN HÌNH PASS & START --- */
+/* --- MÀN HÌNH PHỤ --- */
 #password-screen, #start-overlay, #countdown-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; justify-content: center; align-items: center;
 }
-
 #password-screen { background: radial-gradient(circle, #1a1a1a 0%, #000000 100%); z-index: 100; }
 .pass-box { text-align: center; border: 2px solid #00e5ff; padding: 40px; border-radius: 15px; background: rgba(0,0,0,0.8); }
-#pass-input { padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center; border-radius: 5px; border: 1px solid #555; }
+#pass-input { padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center; border-radius: 5px; }
 button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
-
 #start-overlay { background: black; z-index: 90; cursor: pointer; }
-.pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; letter-spacing: 2px; }
-@keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff, 0 0 40px #00e5ff; } }
+.pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; }
+@keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
 
-/* --- ĐẾM NGƯỢC --- */
+/* --- COUNTDOWN (SỬA LẠI VÒNG XOAY) --- */
 #countdown-screen { background: black; z-index: 80; }
 .timer-container { position: relative; width: 200px; height: 200px; }
-.timer-svg { transform: rotate(-90deg); }
+.timer-svg { transform: rotate(-90deg); } /* Bắt đầu từ 12h */
 .circle-bg { fill: none; stroke: #333; stroke-width: 8; }
 .circle-run { 
     fill: none; stroke: #00e5ff; stroke-width: 8; stroke-linecap: round;
-    stroke-dasharray: 565; stroke-dashoffset: 0; 
+    stroke-dasharray: 565; /* 2 * PI * 90 */
+    stroke-dashoffset: 0; /* Mặc định là ĐẦY */
 }
-/* Animation chạy trong 0.9s để có khoảng nghỉ 0.1s reset */
-.animate-reverse { animation: reverseTick 0.9s linear forwards; }
-@keyframes reverseTick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 565; } }
+
+/* Animation: Từ 0 (Đầy) -> 565 (Rỗng) trong 1s */
+.animate-reverse { animation: reverseTick 1s linear forwards; }
+@keyframes reverseTick { 
+    from { stroke-dashoffset: 0; } 
+    to { stroke-dashoffset: 565; } 
+}
+
 #countdown-number { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 20px #00e5ff; 
 }
 
-/* --- MÀN HÌNH NỘI DUNG (Layout mới) --- */
+/* --- CONTENT SCREEN (FIX LAYOUT) --- */
 #content-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: black; z-index: 50;
@@ -52,80 +56,71 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     pointer-events: none; z-index: 60;
 }
 
-/* Layout Flexbox căn giữa */
 .main-layout {
-    width: 100%; height: 100%; 
-    display: flex;
-    align-items: center; /* Căn giữa theo chiều dọc */
-    justify-content: center;
-    position: relative;
-    padding: 0 5%; /* Khoảng cách an toàn 2 bên */
-    box-sizing: border-box;
+    width: 100%; height: 100%; position: relative;
 }
 
-/* ẢNH */
+/* --- ẢNH (QUAN TRỌNG: POSITION ABSOLUTE) --- */
 .image-section {
-    position: absolute; /* Để dễ dàng di chuyển animation */
+    position: absolute;
+    /* TRẠNG THÁI MẶC ĐỊNH: Ở GIỮA */
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+    
+    /* Transition để tạo hiệu ứng trượt */
     transition: all 1.5s ease-in-out;
     z-index: 10;
-    display: flex; justify-content: center; align-items: center;
 }
 
 #ma-img {
-    max-height: 80vh; max-width: 40vw; /* Giới hạn kích thước ảnh */
+    max-height: 80vh; max-width: 40vw;
     border-radius: 15px;
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Trạng thái ảnh trượt sang trái */
+/* TRẠNG THÁI KHI CÓ CLASS 'move-left': TRƯỢT SANG TRÁI */
 .image-section.move-left {
-    left: 25%; /* Căn sang vị trí 1/4 màn hình trái */
+    left: 25%; /* Căn sang trái */
+    transform: translate(-50%, -50%); /* Giữ căn giữa dọc */
 }
 
-/* TEXT */
+/* --- TEXT --- */
 .text-section {
-    width: 45%; /* Chiếm gần một nửa phải */
-    margin-left: 50%; /* Đẩy sang phải để tránh ảnh */
-    height: auto;
-    max-height: 80vh;
+    position: absolute;
+    top: 50%; right: 5%; /* Căn phải */
+    transform: translateY(-50%);
+    width: 45%; 
+    height: auto; max-height: 90vh;
     z-index: 11;
     display: flex; flex-direction: column; justify-content: center;
-    transition: opacity 1.5s ease; /* Hiệu ứng mờ dần */
+    
+    /* Để làm mờ cả khung chat */
+    transition: opacity 2s ease; 
 }
 
-/* Container chứa nội dung chat */
 #message-container {
     padding: 20px;
-    /* Font yêu cầu */
-    font-family: 'Times New Roman', serif;
-    font-size: 14px;
+    font-family: 'Times New Roman', serif; /* Yêu cầu Font */
+    font-size: 14px; /* Yêu cầu Size */
     color: #fff;
-    overflow-y: auto; /* Cho phép cuộn nếu quá dài */
+    overflow-y: auto;
+    max-height: 80vh;
 }
 
+/* Từng đoạn text hiện lên */
 #message-container p {
-    line-height: 1.6;
-    margin-bottom: 12px;
-    opacity: 0;
-    transform: translateY(20px);
+    line-height: 1.6; margin-bottom: 12px;
+    opacity: 0; transform: translateY(20px);
     transition: all 0.5s ease;
     text-shadow: 1px 1px 2px black;
 }
+#message-container p.show-text { opacity: 1; transform: translateY(0); }
 
-#message-container p.show-text {
-    opacity: 1; transform: translateY(0);
-}
-
-/* CSS cho các style đặc biệt */
-.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 16px; }
+/* Style đặc biệt */
+.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 16px; display: block; margin-bottom: 10px;}
 .highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.5rem; margin-top: 20px; display: block;}
 .highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.3rem; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif;}
 
-/* Class để làm mờ chữ khi kết thúc */
-.fade-out-text {
-    opacity: 0;
-    pointer-events: none;
-}
+/* Class ẩn text cuối cùng */
+.fade-out { opacity: 0 !important; pointer-events: none; }

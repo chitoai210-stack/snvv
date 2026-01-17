@@ -8,101 +8,108 @@ body {
     color: white;
 }
 
-/* --- MÀN HÌNH PHỤ --- */
-#password-screen, #start-overlay, #countdown-screen {
+/* --- CÁC MÀN HÌNH PHỤ --- */
+#password-screen, #start-overlay, #countdown-screen, #gif-screen, #gif2-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; justify-content: center; align-items: center;
+    background: black;
 }
-#password-screen { background: radial-gradient(circle, #1a1a1a 0%, #000000 100%); z-index: 100; }
+/* Z-index phân tầng hiển thị */
+#password-screen { z-index: 100; background: radial-gradient(circle, #1a1a1a 0%, #000000 100%); }
+#start-overlay { z-index: 90; cursor: pointer; }
+#countdown-screen { z-index: 80; }
+#gif-screen { z-index: 75; } /* Mới */
+#gif2-screen { z-index: 70; } /* Mới */
+#content-screen { z-index: 50; }
+
+/* Style cho Password Box */
 .pass-box { text-align: center; border: 2px solid #00e5ff; padding: 40px; border-radius: 15px; background: rgba(0,0,0,0.8); }
 #pass-input { padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center; border-radius: 5px; }
 button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
-#start-overlay { background: black; z-index: 90; cursor: pointer; }
 .pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; }
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
 
 /* --- COUNTDOWN --- */
-#countdown-screen { background: black; z-index: 80; }
 .timer-container { position: relative; width: 200px; height: 200px; }
 .timer-svg { transform: rotate(-90deg); }
 .circle-bg { fill: none; stroke: #333; stroke-width: 8; }
-
 .circle-run { 
     fill: none; stroke: #00e5ff; stroke-width: 8; stroke-linecap: round;
-    stroke-dasharray: 565; 
-    stroke-dashoffset: 0;
+    stroke-dasharray: 565; stroke-dashoffset: 0;
 }
-
-/* Animation 1s */
 .animate-reverse { animation: reverseTick 0.95s linear forwards; }
 @keyframes reverseTick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 565; } }
-
 #countdown-number { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 20px #00e5ff; 
 }
 
-/* --- CONTENT SCREEN --- */
-#content-screen {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: black; z-index: 50;
-    overflow: hidden;
+/* --- GIF SCREENS (MỚI) --- */
+.fullscreen-gif {
+    width: 100%; height: 100%;
+    object-fit: cover; /* Phủ kín màn hình */
 }
 
-#fireworks {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 60;
-}
-
-.main-layout { width: 100%; height: 100%; position: relative; }
-
-/* --- ẢNH (Quan trọng: transition left) --- */
-.image-section {
+/* Chữ Lêu lêu */
+#mockery-text {
     position: absolute;
-    top: 50%; left: 50%; /* Vị trí trung tâm (mặc định) */
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     
-    /* Hiệu ứng trượt mượt mà trong 2.5s */
-    transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1);
-    will-change: left; /* Tối ưu hiệu năng */
+    /* Size 20 trong Word ~ 26px - 28px web */
+    font-size: 28px; 
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    color: #ff0055; /* Màu hồng neon nổi bật */
+    text-shadow: 0 0 10px white, 0 0 20px #ff0055;
+    background: rgba(0, 0, 0, 0.6); /* Nền đen mờ để dễ đọc */
+    padding: 20px 40px;
+    border-radius: 10px;
+    border: 2px solid #ff0055;
     
+    display: none; /* Mặc định ẩn, JS sẽ kích hoạt */
+}
+
+/* --- CONTENT SCREEN --- */
+#fireworks { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 60; }
+.main-layout { width: 100%; height: 100%; position: relative; }
+
+/* ẢNH CHÍNH */
+.image-section {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: left;
     z-index: 10;
     height: 80vh; 
     display: flex; align-items: center; justify-content: center;
 }
-
 #ma-img {
     max-height: 100%; max-width: 40vw;
     border-radius: 15px;
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
+.image-section.move-left { left: 25%; }
 
-/* Khi có class này thì ảnh nằm bên trái */
-.image-section.move-left {
-    left: 25%;
-}
-
-/* --- TEXT SECTION --- */
+/* TEXT SECTION */
 .text-section {
     position: absolute;
     top: 50%; right: 5%; 
     transform: translateY(-50%);
-    width: 45%;
-    height: 80vh;
+    width: 45%; height: 80vh;
     z-index: 11;
     display: flex; flex-direction: column; 
-    justify-content: flex-start;
-    align-items: flex-start;
-    
-    /* Hiệu ứng mờ dần */
+    justify-content: flex-start; align-items: flex-start;
     transition: opacity 2s ease; 
 }
 
 #message-container {
     width: 100%;
     font-family: 'Times New Roman', serif;
-    font-size: 16px; 
+    /* Size 16 trong Word ~ 21px web (để nhìn to rõ như Word) */
+    font-size: 21px; 
     color: #fff;
     overflow-y: hidden; 
 }
@@ -116,9 +123,9 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 }
 #message-container p.show-text { opacity: 1; transform: translateY(0); }
 
-.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 18px; display: block; margin-bottom: 10px;}
-.highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.8rem; margin-top: 20px; display: block; text-align: right;}
-.highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.4rem; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}
+/* Các class định dạng chữ */
+.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; display: block; margin-bottom: 10px;}
+.highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.5em; margin-top: 20px; display: block; text-align: right;}
+.highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.2em; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}
 
-/* Class để ẩn text */
 .fade-out { opacity: 0 !important; pointer-events: none; }

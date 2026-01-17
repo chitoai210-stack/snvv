@@ -21,7 +21,7 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 .pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; }
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
 
-/* --- COUNTDOWN (FIXED) --- */
+/* --- COUNTDOWN --- */
 #countdown-screen { background: black; z-index: 80; }
 .timer-container { position: relative; width: 200px; height: 200px; }
 .timer-svg { transform: rotate(-90deg); }
@@ -29,16 +29,13 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 .circle-run { 
     fill: none; stroke: #00e5ff; stroke-width: 8; stroke-linecap: round;
-    stroke-dasharray: 565; /* Chu vi hình tròn */
-    stroke-dashoffset: 0;  /* Mặc định là đầy */
+    stroke-dasharray: 565; 
+    stroke-dashoffset: 0;
 }
 
-/* Animation chạy trong 1s (linear để mượt) */
+/* Animation 1s */
 .animate-reverse { animation: reverseTick 0.95s linear forwards; }
-@keyframes reverseTick { 
-    from { stroke-dashoffset: 0; } 
-    to { stroke-dashoffset: 565; } 
-}
+@keyframes reverseTick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 565; } }
 
 #countdown-number { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -59,13 +56,16 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 .main-layout { width: 100%; height: 100%; position: relative; }
 
-/* --- ẢNH --- */
+/* --- ẢNH (Quan trọng: transition left) --- */
 .image-section {
     position: absolute;
-    top: 50%; left: 50%;
+    top: 50%; left: 50%; /* Vị trí trung tâm (mặc định) */
     transform: translate(-50%, -50%);
-    /* Thời gian ảnh trượt về: 2s cho chậm rãi */
-    transition: all 2s ease-in-out; 
+    
+    /* Hiệu ứng trượt mượt mà trong 2.5s */
+    transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1);
+    will-change: left; /* Tối ưu hiệu năng */
+    
     z-index: 10;
     height: 80vh; 
     display: flex; align-items: center; justify-content: center;
@@ -78,9 +78,9 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
+/* Khi có class này thì ảnh nằm bên trái */
 .image-section.move-left {
     left: 25%;
-    transform: translate(-50%, -50%);
 }
 
 /* --- TEXT SECTION --- */
@@ -95,7 +95,7 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     justify-content: flex-start;
     align-items: flex-start;
     
-    /* Thời gian mờ đi của cả khung chữ: 2s */
+    /* Hiệu ứng mờ dần */
     transition: opacity 2s ease; 
 }
 
@@ -116,10 +116,9 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 }
 #message-container p.show-text { opacity: 1; transform: translateY(0); }
 
-/* Style Chữ */
 .date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 18px; display: block; margin-bottom: 10px;}
 .highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.8rem; margin-top: 20px; display: block; text-align: right;}
 .highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.4rem; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif; text-align: center;}
 
-/* Class ẩn text */
+/* Class để ẩn text */
 .fade-out { opacity: 0 !important; pointer-events: none; }

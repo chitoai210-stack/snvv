@@ -12,7 +12,7 @@ const messageLines = [
         time: 5000 // 5 giây
     },
     { 
-        text: "Không biết ngày hôm nay của bạn như thế nào, sẽ có chuyện vui, chuyện buồn, tức dzận, hay chỉ là 1 ngày bình thường như bao ngày ? Có nhận được những lời chúc mừng từ những người mình yêu thương và trân trọng ?", 
+        text: "Thật ra, đó giờ cũng nhận được nhiều món quà ý nghĩa của bạn Minh Em, mà thật sự chưa có dịp để có gì đó tặng bạn. Tài hèn sức mọn bạn coi cho zui, cũng mong là", 
         time: 8000 // 8 giây
     },
     { 
@@ -309,3 +309,4 @@ function startFireworks() {
     animate();
     createParticle(canvas.width / 2, canvas.height / 3);
 }
+

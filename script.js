@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nhacMaSound = document.getElementById('sound-nhacma');
     beepSound = document.getElementById('sound-beep');
     rasenSound = document.getElementById('sound-rasen');
-    phanthanSound = document.getElementById('sound-phanthan'); // Mới
+    phanthanSound = document.getElementById('sound-phanthan');
 
     document.getElementById('pass-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPass();
@@ -63,7 +63,6 @@ function runCountdown() {
         beepSound.play();
 
         if (count === 0) {
-            // Chuyển sang chuỗi Kage Bushin
             setTimeout(runKageSequence, 1000);
             return;
         }
@@ -73,39 +72,38 @@ function runCountdown() {
     runTick();
 }
 
-// --- 1. MÀN HÌNH KAGE BUSHIN (MỚI) ---
+// --- 1. KAGE BUSHIN ---
 function runKageSequence() {
     document.getElementById('countdown-screen').style.display = 'none';
     const kageScreen = document.getElementById('kage-screen');
     kageScreen.style.display = 'flex';
 
-    // Phát âm thanh
     phanthanSound.currentTime = 0;
     phanthanSound.play();
 
-    // Hiện trong 2.5 giây (tùy độ dài câu nói)
     setTimeout(() => {
         kageScreen.style.display = 'none';
-        runGifSequence(); // Chuyển sang Gif Rasen
+        runGifSequence(); 
     }, 2500); 
 }
 
-// --- 2. MÀN HÌNH GIF RASEN ---
+// --- 2. VIDEO GIF RASEN ---
 function runGifSequence() {
     const gif1Screen = document.getElementById('gif-screen');
     gif1Screen.style.display = 'flex';
     
-    rasenSound.currentTime = 0;
+    // TUA ĐẾN GIÂY THỨ 5
+    rasenSound.currentTime = 5; 
     rasenSound.play();
 
     setTimeout(() => {
         gif1Screen.style.display = 'none'; 
         rasenSound.pause();
-        runGif2Sequence(); // Chuyển sang Gif Lêu lêu
-    }, 5000);
+        runGif2Sequence(); 
+    }, 5000); // Phát trong 5s (từ giây 5 đến giây 10 của bài nhạc)
 }
 
-// --- 3. MÀN HÌNH GIF LÊU LÊU ---
+// --- 3. GIF LÊU LÊU ---
 function runGif2Sequence() {
     const gif2Screen = document.getElementById('gif2-screen');
     const textEl = document.getElementById('mockery-text');
@@ -126,26 +124,38 @@ function runGif2Sequence() {
             }, 2000); 
         } else {
             gif2Screen.style.display = 'none';
-            showContentSequence(); // Vào màn hình chính
+            showContentSequence(); 
         }
     }
     loopText();
 }
 
-// --- 4. MÀN HÌNH CHÍNH (ĐÃ FIX LAYOUT) ---
+// --- 4. MÀN HÌNH CHÍNH (LOGIC MỚI) ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
-    contentScreen.style.display = 'flex'; // Dùng Flexbox layout đã sửa trong CSS
+    contentScreen.style.display = 'flex'; 
 
-    // 1.5s đầu ảnh ở giữa
+    const imgSection = document.querySelector('.image-section');
+    const textSection = document.querySelector('.text-section');
+
+    // BƯỚC 1: Hiện ảnh từ từ ở giữa (trong 2s)
     setTimeout(() => {
-        document.querySelector('.image-section').classList.add('move-left');
+        imgSection.classList.add('fade-in-center');
 
-        // Trượt xong -> Hiện chữ
+        // BƯỚC 2: Sau khi hiện xong (2s) -> Trượt ảnh sang trái
         setTimeout(() => {
-            runTextAnimation();
-        }, 1200); 
-    }, 1500);
+            imgSection.classList.add('move-left');
+            
+            // BƯỚC 3: Cùng lúc đó, chữ trượt từ phải vào
+            textSection.classList.add('slide-in-right');
+
+            // BƯỚC 4: Sau khi trượt xong (1.5s transition) -> Bắt đầu hiện chữ từng dòng
+            setTimeout(() => {
+                runTextAnimation();
+            }, 1600); 
+
+        }, 2500); 
+    }, 100); // Delay nhỏ để trình duyệt render
 }
 
 function runTextAnimation() {
@@ -181,10 +191,13 @@ function runTextAnimation() {
 
 function endSequence() {
     const textSection = document.querySelector('.text-section');
+    
+    // Mờ chữ
     textSection.classList.add('fade-out');
 
     setTimeout(() => {
         const imgSection = document.querySelector('.image-section');
+        // Ảnh trượt về giữa
         imgSection.classList.remove('move-left');
     }, 2000);
 }

@@ -84,7 +84,6 @@ function runGifSequence() {
     const videoEl = gif1Screen.querySelector('video');
     gif1Screen.style.display = 'flex';
     if(videoEl) { videoEl.currentTime = 0; videoEl.play(); }
-    
     rasenSound.currentTime = 5; 
     rasenSound.play();
 
@@ -149,7 +148,7 @@ function runGif2Sequence() {
     }, 2000);
 }
 
-// --- MÀN HÌNH CHÍNH (ĐÃ SỬA AUTO SCROLL & ENDING) ---
+// --- MÀN HÌNH CHÍNH (LOGIC MỚI) ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex'; 
@@ -157,17 +156,23 @@ function showContentSequence() {
     const imgSection = document.querySelector('.image-section');
     const textSection = document.querySelector('.text-section');
 
-    // Đợi 2s (chỉ có nền hoa)
+    // 1. Chỉ hiện nền hoa trong 2 giây (Chưa hiện ảnh)
+    
     setTimeout(() => {
-        imgSection.classList.add('fade-in-center'); // Hiện ảnh giữa
-        setTimeout(() => {
-            imgSection.classList.add('move-left'); // Trượt trái
-            textSection.classList.add('slide-in-right'); // Chữ vào
+        // 2. Sau 2s, ảnh hiện dần ở giữa
+        imgSection.classList.add('fade-in-center');
 
+        // 3. Sau khi ảnh hiện xong -> Trượt sang trái
+        setTimeout(() => {
+            imgSection.classList.add('move-left');
+            textSection.classList.add('slide-in-right');
+
+            // 4. Bắt đầu hiện chữ
             setTimeout(() => {
                 runTextAnimation();
             }, 1600); 
         }, 2500); 
+
     }, 2000); 
 }
 
@@ -181,7 +186,7 @@ function runTextAnimation() {
             p.innerHTML = messageLines[lineIndex];
             container.appendChild(p);
             
-            // --- TỰ ĐỘNG CUỘN XUỐNG DƯỚI CÙNG (AUTO SCROLL) ---
+            // Auto Scroll
             container.scrollTo({
                 top: container.scrollHeight,
                 behavior: 'smooth'
@@ -194,14 +199,13 @@ function runTextAnimation() {
             if (readingTime < 1500) readingTime = 1500;
 
             if (lineIndex === messageLines.length - 1) {
-                // Dòng cuối đã hiện xong
-                startFireworks(); // 1. Bắn pháo hoa
+                // KHI DÒNG CUỐI XUẤT HIỆN
+                startFireworks(); // Bắn pháo hoa
                 
-                // Đợi đọc xong dòng cuối + 1s -> Chạy kết thúc
+                // Đợi đọc xong dòng cuối rồi mới thu về
                 setTimeout(() => {
                     endSequence();
                 }, readingTime + 1000); 
-
             } else {
                 lineIndex++;
                 setTimeout(showNextLine, readingTime);
@@ -215,14 +219,14 @@ function endSequence() {
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
 
-    // 2. Ẩn chữ đi
+    // Mờ chữ
     textSection.classList.add('fade-out');
 
-    // 3. Trả ảnh về giữa (Pháo hoa vẫn đang bắn)
-    // Bằng cách xóa class move-left, CSS transition sẽ đưa nó về top 50%, left 50%
+    // Đợi chữ mờ đi rồi trả ảnh về giữa
     setTimeout(() => {
+        // Xóa class move-left -> CSS sẽ tự đưa left về 50%
         imgSection.classList.remove('move-left');
-    }, 1000); 
+    }, 1000);
 }
 
 // --- PHÁO HOA ---

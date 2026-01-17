@@ -1,4 +1,4 @@
-const SECRET_PASS = "CT011002"; 
+const SECRET_PASS = "MA080103"; 
 let nhacMaSound, beepSound, rasenSound, phanthanSound, cuoiSound;
 
 // --- CẤU HÌNH NỘI DUNG VÀ THỜI GIAN (time: mili-giây) ---
@@ -309,4 +309,5 @@ function startFireworks() {
     animate();
     createParticle(canvas.width / 2, canvas.height / 3);
 }
+
 

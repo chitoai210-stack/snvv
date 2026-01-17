@@ -8,7 +8,7 @@ body {
     color: white;
 }
 
-/* --- MÀN HÌNH PASS & START (GIỮ NGUYÊN) --- */
+/* --- MÀN HÌNH PASS & START --- */
 #password-screen, #start-overlay, #countdown-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     display: flex; justify-content: center; align-items: center;
@@ -23,7 +23,7 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 .pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; letter-spacing: 2px; }
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff, 0 0 40px #00e5ff; } }
 
-/* --- ĐẾM NGƯỢC (SỬA LẠI CHO CHUẨN) --- */
+/* --- ĐẾM NGƯỢC --- */
 #countdown-screen { background: black; z-index: 80; }
 .timer-container { position: relative; width: 200px; height: 200px; }
 .timer-svg { transform: rotate(-90deg); }
@@ -32,14 +32,15 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     fill: none; stroke: #00e5ff; stroke-width: 8; stroke-linecap: round;
     stroke-dasharray: 565; stroke-dashoffset: 0; 
 }
-.animate-reverse { animation: reverseTick 1s linear forwards; }
+/* Animation chạy trong 0.9s để có khoảng nghỉ 0.1s reset */
+.animate-reverse { animation: reverseTick 0.9s linear forwards; }
 @keyframes reverseTick { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 565; } }
 #countdown-number { 
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
     font-family: 'Orbitron', sans-serif; font-size: 5rem; color: #fff; text-shadow: 0 0 20px #00e5ff; 
 }
 
-/* --- MÀN HÌNH NỘI DUNG (MỚI) --- */
+/* --- MÀN HÌNH NỘI DUNG (Layout mới) --- */
 #content-screen {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: black; z-index: 50;
@@ -48,80 +49,83 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 #fireworks {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none; z-index: 60; /* Pháo hoa nằm đè lên */
+    pointer-events: none; z-index: 60;
 }
 
+/* Layout Flexbox căn giữa */
 .main-layout {
-    width: 100%; height: 100%; position: relative;
+    width: 100%; height: 100%; 
+    display: flex;
+    align-items: center; /* Căn giữa theo chiều dọc */
+    justify-content: center;
+    position: relative;
+    padding: 0 5%; /* Khoảng cách an toàn 2 bên */
+    box-sizing: border-box;
 }
 
 /* ẢNH */
 .image-section {
-    position: absolute; width: 100%; height: 100%;
-    pointer-events: none;
+    position: absolute; /* Để dễ dàng di chuyển animation */
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 1.5s ease-in-out;
+    z-index: 10;
+    display: flex; justify-content: center; align-items: center;
 }
 
 #ma-img {
-    position: absolute;
-    /* Ban đầu ở giữa */
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    
-    max-height: 80vh; max-width: 80vw;
+    max-height: 80vh; max-width: 40vw; /* Giới hạn kích thước ảnh */
     border-radius: 15px;
     box-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
-    
-    transition: all 1.5s ease-in-out; /* Hiệu ứng trượt mượt */
-    z-index: 10;
 }
 
-/* Class kích hoạt khi trượt sang trái */
-#ma-img.move-left {
-    left: 5%; /* Cách lề trái 5% */
-    transform: translate(0, -50%); /* Chỉ giữ căn giữa theo chiều dọc */
-    max-height: 70vh; /* Thu nhỏ chút xíu cho cân đối */
+/* Trạng thái ảnh trượt sang trái */
+.image-section.move-left {
+    left: 25%; /* Căn sang vị trí 1/4 màn hình trái */
 }
 
 /* TEXT */
 .text-section {
-    position: absolute;
-    top: 50%; right: 5%; /* Cách lề phải 5% */
-    width: 55%; /* Chiếm phần còn lại */
-    transform: translateY(-50%);
-    height: 80vh;
-    display: flex; flex-direction: column; justify-content: center;
+    width: 45%; /* Chiếm gần một nửa phải */
+    margin-left: 50%; /* Đẩy sang phải để tránh ảnh */
+    height: auto;
+    max-height: 80vh;
     z-index: 11;
+    display: flex; flex-direction: column; justify-content: center;
+    transition: opacity 1.5s ease; /* Hiệu ứng mờ dần */
+}
+
+/* Container chứa nội dung chat */
+#message-container {
+    padding: 20px;
+    /* Font yêu cầu */
+    font-family: 'Times New Roman', serif;
+    font-size: 14px;
+    color: #fff;
+    overflow-y: auto; /* Cho phép cuộn nếu quá dài */
 }
 
 #message-container p {
-    font-size: 1.1rem; line-height: 1.6;
+    line-height: 1.6;
     margin-bottom: 12px;
-    opacity: 0; /* Ban đầu ẩn */
+    opacity: 0;
     transform: translateY(20px);
     transition: all 0.5s ease;
     text-shadow: 1px 1px 2px black;
 }
 
-/* Hiệu ứng hiện chữ */
 #message-container p.show-text {
     opacity: 1; transform: translateY(0);
 }
 
-/* Style riêng cho các phần đặc biệt */
-.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; }
+/* CSS cho các style đặc biệt */
+.date-highlight { color: #00e5ff; font-family: 'Orbitron', sans-serif; font-weight: bold; font-size: 16px; }
 .highlight-sign { color: #ff69b4; font-family: 'Pacifico', cursive; font-size: 1.5rem; margin-top: 20px; display: block;}
-.highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.3rem; margin-top: 10px; display: block;}
+.highlight-hpbd { color: #ffd700; font-weight: bold; font-size: 1.3rem; margin-top: 10px; display: block; font-family: 'Montserrat', sans-serif;}
 
-/* Responsive cho mobile nếu cần (màn dọc) */
-@media (max-width: 768px) {
-    #ma-img.move-left {
-        left: 50%; top: 20%; transform: translate(-50%, 0);
-        max-height: 30vh;
-    }
-    .text-section {
-        top: auto; bottom: 0; right: 0; width: 100%; height: 60%;
-        padding: 20px; box-sizing: border-box;
-    }
-    #message-container p { font-size: 0.9rem; margin-bottom: 8px; }
+/* Class để làm mờ chữ khi kết thúc */
+.fade-out-text {
+    opacity: 0;
+    pointer-events: none;
 }

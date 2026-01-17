@@ -1,5 +1,5 @@
 const SECRET_PASS = "CT011002"; 
-let nhacMaSound, beepSound, rasenSound;
+let nhacMaSound, beepSound, rasenSound, phanthanSound;
 
 const messageLines = [
     "<span class='date-highlight'>- 08/01/2026 -</span>",
@@ -17,7 +17,8 @@ const messageLines = [
 document.addEventListener('DOMContentLoaded', () => {
     nhacMaSound = document.getElementById('sound-nhacma');
     beepSound = document.getElementById('sound-beep');
-    rasenSound = document.getElementById('sound-rasen'); // Âm thanh mới
+    rasenSound = document.getElementById('sound-rasen');
+    phanthanSound = document.getElementById('sound-phanthan'); // Mới
 
     document.getElementById('pass-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPass();
@@ -49,7 +50,7 @@ function runCountdown() {
     const circleEl = document.getElementById('circle-effect');
     
     countdownScreen.style.display = 'flex';
-    let count = 5; // Có thể sửa thành 5
+    let count = 5;
 
     const runTick = () => {
         numberEl.textContent = count;
@@ -62,8 +63,8 @@ function runCountdown() {
         beepSound.play();
 
         if (count === 0) {
-            // Thay vì vào thẳng Content, ta chuyển sang Sequence GIF
-            setTimeout(runGifSequence, 1000);
+            // Chuyển sang chuỗi Kage Bushin
+            setTimeout(runKageSequence, 1000);
             return;
         }
         count--;
@@ -72,65 +73,69 @@ function runCountdown() {
     runTick();
 }
 
-// --- LOGIC GIF MỚI ---
-function runGifSequence() {
+// --- 1. MÀN HÌNH KAGE BUSHIN (MỚI) ---
+function runKageSequence() {
     document.getElementById('countdown-screen').style.display = 'none';
-    
-    // 1. Hiện GIF 1 + Phát Rasen
+    const kageScreen = document.getElementById('kage-screen');
+    kageScreen.style.display = 'flex';
+
+    // Phát âm thanh
+    phanthanSound.currentTime = 0;
+    phanthanSound.play();
+
+    // Hiện trong 2.5 giây (tùy độ dài câu nói)
+    setTimeout(() => {
+        kageScreen.style.display = 'none';
+        runGifSequence(); // Chuyển sang Gif Rasen
+    }, 2500); 
+}
+
+// --- 2. MÀN HÌNH GIF RASEN ---
+function runGifSequence() {
     const gif1Screen = document.getElementById('gif-screen');
     gif1Screen.style.display = 'flex';
     
     rasenSound.currentTime = 0;
     rasenSound.play();
 
-    // Gif 1 chạy trong 5 giây (hoặc tùy độ dài âm thanh rasen)
     setTimeout(() => {
-        gif1Screen.style.display = 'none'; // Tắt GIF 1
-        rasenSound.pause(); // Tắt nhạc rasen
-        runGif2Sequence(); // Chuyển sang GIF 2
-    }, 5000); // 5000ms = 5 giây
+        gif1Screen.style.display = 'none'; 
+        rasenSound.pause();
+        runGif2Sequence(); // Chuyển sang Gif Lêu lêu
+    }, 5000);
 }
 
+// --- 3. MÀN HÌNH GIF LÊU LÊU ---
 function runGif2Sequence() {
     const gif2Screen = document.getElementById('gif2-screen');
     const textEl = document.getElementById('mockery-text');
     gif2Screen.style.display = 'flex';
 
-    // Logic hiện chữ "Lêu lêu" 3 lần, mỗi lần 2 giây
     let count = 0;
     const maxCount = 3;
 
     function loopText() {
         if (count < maxCount) {
-            // Hiện chữ
             textEl.style.display = 'block';
-            
-            // Đợi 2 giây
             setTimeout(() => {
-                textEl.style.display = 'none'; // Ẩn chữ
-                
-                // Đợi 0.5s nghỉ trước khi hiện lại (để tạo hiệu ứng nhấp nháy rõ hơn)
+                textEl.style.display = 'none'; 
                 setTimeout(() => {
                     count++;
-                    loopText(); // Lặp lại
+                    loopText(); 
                 }, 500); 
-
-            }, 2000); // Thời gian hiện chữ: 2 giây
+            }, 2000); 
         } else {
-            // Đã xong 3 lần -> Chuyển sang màn hình chính
             gif2Screen.style.display = 'none';
-            showContentSequence();
+            showContentSequence(); // Vào màn hình chính
         }
     }
-    
-    // Bắt đầu vòng lặp chữ ngay khi GIF 2 hiện
     loopText();
 }
 
-// --- LOGIC MÀN HÌNH CHÍNH (Cũ) ---
+// --- 4. MÀN HÌNH CHÍNH (ĐÃ FIX LAYOUT) ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
-    contentScreen.style.display = 'flex';
+    contentScreen.style.display = 'flex'; // Dùng Flexbox layout đã sửa trong CSS
 
     // 1.5s đầu ảnh ở giữa
     setTimeout(() => {
@@ -155,7 +160,6 @@ function runTextAnimation() {
 
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
-            // Tốc độ đọc
             const plainText = p.innerText || p.textContent;
             let readingTime = 1000 + (plainText.length * 60);
             if (readingTime < 1500) readingTime = 1500;

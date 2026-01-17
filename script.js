@@ -31,8 +31,10 @@ function checkPass() {
         document.getElementById('password-screen').style.display = 'none';
         const startOverlay = document.getElementById('start-overlay');
         startOverlay.style.display = 'flex';
+        
         nhacMaSound.volume = 0.8;
         nhacMaSound.play().catch(() => console.log("Audio interact needed"));
+
         startOverlay.addEventListener('click', () => {
             startOverlay.style.display = 'none';
             runCountdown();
@@ -46,6 +48,7 @@ function runCountdown() {
     const countdownScreen = document.getElementById('countdown-screen');
     const numberEl = document.getElementById('countdown-number');
     const circleEl = document.getElementById('circle-effect');
+    
     countdownScreen.style.display = 'flex';
     let count = 5;
 
@@ -56,6 +59,7 @@ function runCountdown() {
         setTimeout(() => { circleEl.classList.add('animate-reverse'); }, 10);
         beepSound.currentTime = 0;
         beepSound.play();
+
         if (count === 0) {
             setTimeout(runKageSequence, 1000);
             return;
@@ -66,42 +70,65 @@ function runCountdown() {
     runTick();
 }
 
+// --- 1. KAGE BUSHIN (Đợi âm thanh hết mới chuyển) ---
 function runKageSequence() {
     document.getElementById('countdown-screen').style.display = 'none';
     const kageScreen = document.getElementById('kage-screen');
     kageScreen.style.display = 'flex';
+
     phanthanSound.currentTime = 0;
     phanthanSound.play();
-    setTimeout(() => {
+
+    // SỰ KIỆN: Khi âm thanh chạy xong -> Chuyển cảnh
+    phanthanSound.onended = function() {
         kageScreen.style.display = 'none';
         runGifSequence(); 
-    }, 2500); 
+    };
 }
 
+// --- 2. VIDEO GIF RASEN ---
 function runGifSequence() {
     const gif1Screen = document.getElementById('gif-screen');
+    const videoEl = gif1Screen.querySelector('video'); // Lấy thẻ video
     gif1Screen.style.display = 'flex';
-    // TUA ĐẾN GIÂY THỨ 5
+    
+    // Đảm bảo video chạy từ đầu
+    if(videoEl) {
+        videoEl.currentTime = 0;
+        videoEl.play();
+    }
+
+    // Âm thanh: Tua đến giây thứ 5
     rasenSound.currentTime = 5; 
     rasenSound.play();
+
+    // Chạy trong 5 giây (hoặc thời gian bạn muốn)
     setTimeout(() => {
         gif1Screen.style.display = 'none'; 
         rasenSound.pause();
+        if(videoEl) videoEl.pause();
         runGif2Sequence(); 
     }, 5000);
 }
 
+// --- 3. GIF LÊU LÊU ---
 function runGif2Sequence() {
     const gif2Screen = document.getElementById('gif2-screen');
     const textEl = document.getElementById('mockery-text');
     gif2Screen.style.display = 'flex';
-    let count = 0; const maxCount = 3;
+
+    let count = 0;
+    const maxCount = 3;
+
     function loopText() {
         if (count < maxCount) {
             textEl.style.display = 'block';
             setTimeout(() => {
                 textEl.style.display = 'none'; 
-                setTimeout(() => { count++; loopText(); }, 500); 
+                setTimeout(() => {
+                    count++;
+                    loopText(); 
+                }, 500); 
             }, 2000); 
         } else {
             gif2Screen.style.display = 'none';
@@ -111,7 +138,7 @@ function runGif2Sequence() {
     loopText();
 }
 
-// --- MÀN HÌNH CHÍNH (ĐÃ UPDATE THEO CSS MỚI) ---
+// --- 4. MÀN HÌNH CHÍNH ---
 function showContentSequence() {
     const contentScreen = document.getElementById('content-screen');
     contentScreen.style.display = 'flex'; 
@@ -119,18 +146,18 @@ function showContentSequence() {
     const imgSection = document.querySelector('.image-section');
     const textSection = document.querySelector('.text-section');
 
-    // 1. Hiện ảnh từ từ ở giữa (fade in)
+    // Hiện ảnh
     setTimeout(() => {
         imgSection.classList.add('fade-in-center');
 
-        // 2. Sau 2s -> Trượt ảnh sang trái
+        // Trượt ảnh
         setTimeout(() => {
             imgSection.classList.add('move-left');
             
-            // 3. Cùng lúc đó, chữ trượt từ phải vào
+            // Trượt chữ vào
             textSection.classList.add('slide-in-right');
 
-            // 4. Bắt đầu hiện chữ từng dòng
+            // Hiện từng dòng text
             setTimeout(() => {
                 runTextAnimation();
             }, 1600); 
@@ -148,6 +175,7 @@ function runTextAnimation() {
             const p = document.createElement('p');
             p.innerHTML = messageLines[lineIndex];
             container.appendChild(p);
+
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
             const plainText = p.innerText || p.textContent;
@@ -155,9 +183,11 @@ function runTextAnimation() {
             if (readingTime < 1500) readingTime = 1500;
 
             if (lineIndex === messageLines.length - 1) {
-                // Dòng cuối
+                // Kết thúc
                 startFireworks();
-                setTimeout(() => { endSequence(); }, 2000); 
+                setTimeout(() => {
+                    endSequence();
+                }, 2000); 
             } else {
                 lineIndex++;
                 setTimeout(showNextLine, readingTime);
@@ -171,13 +201,10 @@ function endSequence() {
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
 
-    // Mờ chữ
-    textSection.classList.remove('slide-in-right'); // Trượt ngược ra hoặc mờ đi
+    textSection.classList.remove('slide-in-right'); 
     textSection.classList.add('fade-out');
 
-    // Đợi 2s rồi trả ảnh về giữa
     setTimeout(() => {
-        // Bỏ class move-left -> CSS sẽ tự trả về left: 50% và transform: translate(-50%, -50%)
         imgSection.classList.remove('move-left');
     }, 2000);
 }

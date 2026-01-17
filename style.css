@@ -38,7 +38,7 @@ body {
 }
 #content-screen::before {
     content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.4); /* Mờ tối nền */
+    background: rgba(0, 0, 0, 0.4); 
     z-index: -1; 
 }
 
@@ -61,12 +61,10 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 .kage-text { font-family: 'Times New Roman', serif; font-size: 40px; font-weight: bold; color: transparent; animation: smokeEffect 4s ease-out forwards; }
 @keyframes smokeEffect { 0% { opacity: 0; text-shadow: 0 0 40px rgba(255,255,255,0); transform: scale(0.8); filter: blur(10px); color: rgba(255,255,255,0); } 50% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.8); filter: blur(2px); color: rgba(255,255,255,0.5); } 100% { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.5); transform: scale(1); filter: blur(0); color: rgba(255,255,255,1); } }
 
-/* --- STYLE CÀ KHỊA (ĐÃ CHỈNH FONT TIMES NEW ROMAN) --- */
+/* --- STYLE CÀ KHỊA --- */
 #mockery-text {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    /* Font Times New Roman */
     font-family: 'Times New Roman', serif;
-    /* Size 30 Word ~ 40px */
     font-size: 40px; 
     font-weight: bold;
     color: #ffd700; -webkit-text-stroke: 1px black; 
@@ -76,12 +74,9 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     display: none; z-index: 10; text-align: center;
 }
 
-/* Chữ Spam "Lêu lêu" */
 .spam-item {
     position: absolute;
-    /* Font Times New Roman */
     font-family: 'Times New Roman', serif;
-    /* Size 20 Word ~ 27px */
     font-size: 27px; 
     font-weight: bold; color: #ff0055;
     text-shadow: 1px 1px 0 #fff;
@@ -90,12 +85,9 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 }
 @keyframes popIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-/* Chữ QUEEEE Khổng lồ */
 #que-text {
     position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    /* Font Times New Roman */
     font-family: 'Times New Roman', serif;
-    /* Size 80 Word ~ 110px */
     font-size: 110px; 
     font-weight: 900; color: white;
     text-shadow: 5px 5px 0 red, -2px -2px 0 black;
@@ -113,13 +105,22 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 /* Phần Ảnh */
 .image-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; }
 .image-section {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    opacity: 0; transition: all 2s cubic-bezier(0.25, 1, 0.5, 1);
+    position: absolute; 
+    /* Vị trí mặc định: Ở GIỮA */
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    
+    opacity: 0; 
+    transition: all 2s cubic-bezier(0.25, 1, 0.5, 1);
+    
     height: auto; max-height: 75vh; width: auto; max-width: 45vw;
     display: flex; align-items: center; justify-content: center;
 }
 #ma-img { max-height: 75vh; width: auto; object-fit: contain; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); }
+
+/* Class hiện ảnh */
 .image-section.fade-in-center { opacity: 1; }
+
+/* Class trượt sang trái */
 .image-section.move-left { left: 5%; transform: translate(0, -50%); }
 
 /* Phần Chữ */
@@ -133,7 +134,13 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 }
 .text-section.slide-in-right { transform: translateY(-50%) translate(0, 0); opacity: 1; }
 
-#message-container { width: 100%; font-family: 'Times New Roman', serif; font-size: 21px; color: #fff; overflow-y: auto; max-height: 100%; padding-right: 10px; }
+#message-container { 
+    width: 100%; font-family: 'Times New Roman', serif; font-size: 21px; color: #fff; 
+    overflow-y: auto; 
+    max-height: 100%; 
+    padding-right: 10px; 
+    scroll-behavior: smooth; /* QUAN TRỌNG: Cuộn mượt */
+}
 #message-container::-webkit-scrollbar { width: 5px; }
 #message-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.5); border-radius: 10px; }
 

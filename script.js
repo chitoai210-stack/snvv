@@ -52,6 +52,17 @@ document.addEventListener('DOMContentLoaded', () => {
     phanthanSound = document.getElementById('sound-phanthan');
     cuoiSound = document.getElementById('sound-cuoi');
 
+    // --- MỚI: Load nội dung ghi chú đã lưu (nếu có) ---
+    const savedNote = localStorage.getItem('userBirthdayNote');
+    const noteArea = document.getElementById('persistent-note');
+    if (savedNote) {
+        noteArea.value = savedNote;
+    }
+    // Lắng nghe sự kiện nhập liệu để lưu ngay lập tức
+    noteArea.addEventListener('input', function() {
+        localStorage.setItem('userBirthdayNote', this.value);
+    });
+
     document.getElementById('pass-input').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') checkPass();
     });
@@ -61,11 +72,25 @@ function checkPass() {
     const inputVal = document.getElementById('pass-input').value;
     if (inputVal === SECRET_PASS) {
         document.getElementById('password-screen').style.display = 'none';
+        
         const startOverlay = document.getElementById('start-overlay');
+        const warningBox = document.getElementById('warning-box');
+        const clickMsg = document.getElementById('click-msg');
+        
         startOverlay.style.display = 'flex';
+        
         nhacMaSound.volume = 0.8;
         nhacMaSound.play().catch(() => console.log("Audio interact needed"));
+
+        // --- MỚI: Logic hiển thị thông báo 8 giây ---
+        // Ban đầu đã hiện warningBox từ HTML
+        setTimeout(() => {
+            warningBox.style.display = 'none'; // Ẩn cảnh báo
+            clickMsg.style.display = 'block';  // Hiện dòng click
+        }, 8000); // 8000ms = 8 giây
+
         startOverlay.addEventListener('click', () => {
+            // Chỉ cho phép click bắt đầu sau khi hiện dòng "Click vào màn hình..." hoặc user vẫn click sớm cũng đc
             startOverlay.style.display = 'none';
             runCountdown();
         });
@@ -250,6 +275,7 @@ function runTextAnimation() {
 function endSequence() {
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
+    const noteContainer = document.getElementById('final-note-container');
 
     // 1. Mờ chữ trước
     textSection.classList.add('fade-out');
@@ -257,6 +283,12 @@ function endSequence() {
     // 2. Đợi một chút (1.5s) để chữ mờ đi, sau đó ảnh mới trượt về giữa
     setTimeout(() => {
         imgSection.classList.remove('move-left'); 
+        
+        // --- MỚI: Hiện khung ghi chú sau khi ảnh đã về giữa ---
+        setTimeout(() => {
+            noteContainer.style.display = 'block';
+        }, 1500);
+
     }, 1500);
 }
 
@@ -309,5 +341,3 @@ function startFireworks() {
     animate();
     createParticle(canvas.width / 2, canvas.height / 3);
 }
-
-

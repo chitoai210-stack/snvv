@@ -7,6 +7,8 @@ body {
     font-family: 'Montserrat', sans-serif;
     color: white;
 }
+/* Thêm box-sizing để tính toán kích thước chuẩn hơn */
+* { box-sizing: border-box; }
 
 /* --- LAYOUT CHUNG --- */
 #password-screen, #start-overlay, #countdown-screen, #gif-screen, #gif2-screen, #kage-screen {
@@ -47,24 +49,35 @@ body {
 #pass-input { padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center; border-radius: 5px; }
 button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
 
-/* -- Mới: Style cho dòng thông báo đầu -- */
+/* -- START CONTENT & WARNING (Đã chỉnh sửa căn giữa) -- */
+.start-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
 .warning-text {
     font-family: 'Times New Roman', serif;
-    font-size: 40px; /* Tương đương size 30 word */
+    font-size: 40px; 
     color: white;
-    text-align: center;
-    max-width: 80%;
+    text-align: center; /* Căn giữa nội dung văn bản */
+    max-width: 90%;     /* Mở rộng một chút để đỡ bị ngắt dòng xấu */
+    margin: 0 auto;     /* Căn giữa khối */
     line-height: 1.4;
     animation: fadeIn 1s ease-in;
 }
 
 .pulse-text { 
     font-family: 'Times New Roman', serif;
-    font-size: 40px; /* Tương đương size 30 word */
+    font-size: 40px; 
     color: #fff; 
     text-align: center;
+    margin-top: 20px;
     animation: textPulse 1s infinite alternate; 
-    text-transform: none; /* Bỏ uppercase để đúng định dạng viết thường */
+    text-transform: none; 
 }
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -107,7 +120,7 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 #fireworks { 
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
     pointer-events: none; 
-    z-index: 99; /* Luôn đè lên mọi thứ */
+    z-index: 99; 
 }
 
 .main-layout { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
@@ -117,46 +130,40 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 .image-section {
     position: absolute; 
-    /* VỊ TRÍ MẶC ĐỊNH (GIỮA) */
     top: 50%; left: 50%; 
-    transform: translate(-50%, -50%); /* Luôn giữ neo tâm này */
-    
+    transform: translate(-50%, -50%); 
     opacity: 0; 
-    /* Chỉ transition các thuộc tính thay đổi để mượt nhất */
     transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 2s ease;
-    
     height: auto; max-height: 75vh; width: auto; max-width: 45vw;
     display: flex; align-items: center; justify-content: center;
-    /* Để định vị con tuyệt đối bên trong */
-    /* position: absolute đã có ở trên */
 }
 #ma-img { max-height: 75vh; width: auto; object-fit: contain; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); }
 
-/* Class hiện ảnh */
 .image-section.fade-in-center { opacity: 1; }
-
-/* Class trượt sang trái (Chỉ đổi left, KHÔNG đổi transform) */
 .image-section.move-left { left: 25%; } 
 
-/* --- MỚI: STYLE CHO Ô GHI CHÚ --- */
+/* --- STYLE CHO Ô GHI CHÚ (Đã chỉnh sửa vị trí) --- */
 #final-note-container {
-    display: none; /* Mặc định ẩn */
+    display: none; 
     position: absolute;
-    /* Cạnh trên phải hình: Canh top 0 và dịch sang phải */
     top: 0;
-    right: -360px; /* Đẩy ra ngoài bên phải hình */
+    /* THAY ĐỔI Ở ĐÂY: Dùng left 100% + margin để luôn nằm bên phải ảnh */
+    left: 100%;
+    margin-left: 20px; 
+    right: auto; /* Bỏ right đi */
+    
     width: 350px;
     background: rgba(0, 0, 0, 0.6);
     padding: 15px;
     border-radius: 10px;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    pointer-events: auto; /* Để có thể click và gõ */
+    pointer-events: auto; 
     animation: fadeIn 1s ease-out;
 }
 
 .note-label {
     font-family: 'Times New Roman', serif;
-    font-size: 33px; /* Tương đương size 25 word */
+    font-size: 33px; 
     color: #ffd700;
     margin-bottom: 10px;
     text-shadow: 1px 1px 2px black;
@@ -165,7 +172,7 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 #persistent-note {
     width: 100%;
-    height: 300px; /* Độ cao tùy chỉnh */
+    height: 300px; 
     background: transparent;
     border: 1px dashed rgba(255, 255, 255, 0.5);
     color: white;
@@ -173,9 +180,9 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     font-size: 24px;
     line-height: 1.4;
     padding: 10px;
-    resize: none; /* Không cho kéo giãn */
+    resize: none; 
     outline: none;
-    box-sizing: border-box; /* Để padding không làm vỡ layout */
+    box-sizing: border-box; 
     overflow-y: auto;
 }
 #persistent-note::placeholder { color: rgba(255,255,255,0.5); font-style: italic; }

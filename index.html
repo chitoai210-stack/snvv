@@ -29,7 +29,10 @@
 
     <div id="start-overlay" style="display: none;">
         <div class="start-content">
-            <div class="pulse-text">Nhấp vào đây để bắt đầu !</div>
+            <div id="warning-box" class="warning-text">
+                Nên dùng laptop để xem sẽ trọn vẹn hơn - do thiết kế chưa được tối ưu trên iphone,ipad
+            </div>
+            <div id="click-msg" class="pulse-text" style="display: none;">Có thể click vào màn hình để xem lại nhanh hơn !</div>
         </div>
     </div>
 
@@ -64,6 +67,11 @@
             <div class="image-wrapper">
                 <div class="image-section">
                     <img src="ma.jpg" id="ma-img" alt="Gift Image">
+                    
+                    <div id="final-note-container">
+                        <div class="note-label">Ô này để ghi những gì bạn muốn</div>
+                        <textarea id="persistent-note" placeholder="Nhập vào đây..."></textarea>
+                    </div>
                 </div>
             </div>
             

@@ -274,7 +274,7 @@ function runTextAnimation() {
     const contentScreen = document.getElementById('content-screen');
     let lineIndex = 0;
 
-    // --- MỚI: Hàm xử lý hiển thị dòng tiếp theo ---
+    // --- HÀM ĐÃ SỬA LỖI ---
     function showNextLine() {
         if (lineIndex < messageLines.length) {
             const currentLine = messageLines[lineIndex]; 
@@ -290,32 +290,32 @@ function runTextAnimation() {
 
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
+            // SỬA: Tăng index NGAY LẬP TỨC để tránh click handler hiểu lầm
+            lineIndex++;
+
             const readingTime = currentLine.time;
 
-            if (lineIndex === messageLines.length - 1) {
-                // Dòng cuối
+            if (lineIndex >= messageLines.length) {
+                // Đã là dòng cuối (vừa in xong)
                 startFireworks(); 
                 currentTimeout = setTimeout(endSequence, readingTime); 
             } else {
-                lineIndex++;
-                // Chờ readingTime giây rồi gọi dòng tiếp
+                // Vẫn còn dòng tiếp theo
                 currentTimeout = setTimeout(showNextLine, readingTime);
             }
         }
     }
 
-    // --- MỚI: Click để tua nhanh từng dòng text ---
+    // --- Click để tua nhanh ---
     contentScreen.addEventListener('click', () => {
         if (currentStage === 'TEXT_RUNNING') {
-            // Nếu đang chờ dòng tiếp theo, hủy chờ và hiện ngay
             clearTimeout(currentTimeout);
             
-            // Nếu đã hết dòng thì thôi
-            if (lineIndex >= messageLines.length && lineIndex > 0) {
-                 // Đã ở dòng cuối, click sẽ kết thúc luôn (nếu đang chờ endSequence)
+            // Vì lineIndex đã được tăng ngay sau khi in dòng hiện tại
+            // Nên nếu lineIndex >= length nghĩa là đã in hết rồi
+            if (lineIndex >= messageLines.length) {
                  endSequence();
             } else {
-                 // Hiện ngay dòng tiếp theo
                  showNextLine();
             }
         }
@@ -325,7 +325,10 @@ function runTextAnimation() {
 }
 
 function endSequence() {
+    // Thêm check để đảm bảo chỉ chạy 1 lần
+    if (currentStage === 'FINISHED') return;
     currentStage = 'FINISHED';
+
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
     const noteContainer = document.getElementById('final-note-container');

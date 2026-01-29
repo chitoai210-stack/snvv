@@ -46,8 +46,29 @@ body {
 .pass-box { text-align: center; border: 2px solid #00e5ff; padding: 40px; border-radius: 15px; background: rgba(0,0,0,0.8); }
 #pass-input { padding: 10px; font-size: 1.2rem; margin-top: 15px; text-align: center; border-radius: 5px; }
 button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
-.pulse-text { font-size: 2rem; color: #fff; animation: textPulse 1s infinite alternate; text-transform: uppercase; }
+
+/* -- Mới: Style cho dòng thông báo đầu -- */
+.warning-text {
+    font-family: 'Times New Roman', serif;
+    font-size: 40px; /* Tương đương size 30 word */
+    color: white;
+    text-align: center;
+    max-width: 80%;
+    line-height: 1.4;
+    animation: fadeIn 1s ease-in;
+}
+
+.pulse-text { 
+    font-family: 'Times New Roman', serif;
+    font-size: 40px; /* Tương đương size 30 word */
+    color: #fff; 
+    text-align: center;
+    animation: textPulse 1s infinite alternate; 
+    text-transform: none; /* Bỏ uppercase để đúng định dạng viết thường */
+}
 @keyframes textPulse { from { opacity: 0.5; text-shadow: 0 0 10px #00e5ff; } to { opacity: 1; text-shadow: 0 0 20px #00e5ff; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 .timer-container { position: relative; width: 200px; height: 200px; }
 .timer-svg { transform: rotate(-90deg); }
 .circle-bg { fill: none; stroke: #333; stroke-width: 8; }
@@ -106,6 +127,8 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
     
     height: auto; max-height: 75vh; width: auto; max-width: 45vw;
     display: flex; align-items: center; justify-content: center;
+    /* Để định vị con tuyệt đối bên trong */
+    /* position: absolute đã có ở trên */
 }
 #ma-img { max-height: 75vh; width: auto; object-fit: contain; border-radius: 15px; box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); border: 2px solid rgba(255, 255, 255, 0.5); }
 
@@ -114,6 +137,49 @@ button { margin-top: 15px; padding: 10px 25px; background: #00e5ff; border: none
 
 /* Class trượt sang trái (Chỉ đổi left, KHÔNG đổi transform) */
 .image-section.move-left { left: 25%; } 
+
+/* --- MỚI: STYLE CHO Ô GHI CHÚ --- */
+#final-note-container {
+    display: none; /* Mặc định ẩn */
+    position: absolute;
+    /* Cạnh trên phải hình: Canh top 0 và dịch sang phải */
+    top: 0;
+    right: -360px; /* Đẩy ra ngoài bên phải hình */
+    width: 350px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    pointer-events: auto; /* Để có thể click và gõ */
+    animation: fadeIn 1s ease-out;
+}
+
+.note-label {
+    font-family: 'Times New Roman', serif;
+    font-size: 33px; /* Tương đương size 25 word */
+    color: #ffd700;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px black;
+    text-align: left;
+}
+
+#persistent-note {
+    width: 100%;
+    height: 300px; /* Độ cao tùy chỉnh */
+    background: transparent;
+    border: 1px dashed rgba(255, 255, 255, 0.5);
+    color: white;
+    font-family: 'Times New Roman', serif;
+    font-size: 24px;
+    line-height: 1.4;
+    padding: 10px;
+    resize: none; /* Không cho kéo giãn */
+    outline: none;
+    box-sizing: border-box; /* Để padding không làm vỡ layout */
+    overflow-y: auto;
+}
+#persistent-note::placeholder { color: rgba(255,255,255,0.5); font-style: italic; }
+
 
 /* 2. Phần Chữ */
 .text-wrapper { position: absolute; top: 0; right: 0; width: 50%; height: 100%; z-index: 20; pointer-events: none; }

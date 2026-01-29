@@ -1,47 +1,51 @@
 const SECRET_PASS = "MA080103"; 
 let nhacMaSound, beepSound, rasenSound, phanthanSound, cuoiSound;
+// Biến lưu trạng thái để xử lý click chuyển nhanh
+let currentStage = 'IDLE'; 
+let currentTimeout = null;
+let currentInterval = null;
 
 // --- CẤU HÌNH NỘI DUNG VÀ THỜI GIAN (time: mili-giây) ---
 const messageLines = [
     { 
         text: "<span class='date-highlight'>- 08/01/2026 -</span>", 
-        time: 2000 // 2 giây
+        time: 2000 
     },
     { 
         text: "Dù không được đúng ngày cho lắm, nhưng coi như là quà sinh nhật muộn nhe. Thì là, hãy xem đây là 1 món quà tinh thần, của 1 ai đó trên thế giới này, not me !", 
-        time: 5000 // 5 giây
+        time: 5000 
     },
     { 
         text: "Thật ra, đó giờ cũng nhận được nhiều món quà ý nghĩa của bạn Minh Em, mà thật sự chưa có dịp để có gì đó tặng bạn. Tài hèn sức mọn bạn coi cho zui, cũng mong là", 
-        time: 8000 // 8 giây
+        time: 8000 
     },
     { 
         text: "Dù có chuyện gì đi nữa, sau tất cả, đến thời điểm hiện tại, bạn hãy thật vui vẻ và hạnh phúc nhé ! Vì những điều đã trải qua, vì khi đọc những dòng này, bạn vẫn có thể mỉm cười, có thể khóc, có thể ở bên những người mình yêu quý và chia sẻ những cảm xúc ấy !", 
-        time: 10000 // 10 giây
+        time: 10000 
     },
     { 
         text: "Có thể là ngày mai, 1 tháng, 1 năm, 10 năm hay 20 năm nữa, tất cả chúng ta sẽ còn ở bên nhau, có thể không, có thể sẽ quên đi nhau theo dòng thời gian, nhưng với mình, những điều chúng ta đã từng, những kỷ niệm đó sẽ không bị lãng quên và sẽ mãi ở 1 góc của não bộ. (gì chứ tui say đắm trong quá khứ lắm, vui buồn gì cũng nhớ)", 
-        time: 15000 // 15 giây
+        time: 15000 
     },
     { 
         text: "Nếu sau này không ai chúc mừng sinh nhật bạn nữa, thề với bạn là sẽ luôn có 1 người ghi nhớ điều đó, chỉ cần . 1 cái là sẽ có lời chúc tới ngay và luôn ! (thặc ra là nhớ hết, tại tùy hoàn cảnh có chúc được hay ko thoai)", 
-        time: 8000 // 8 giây
+        time: 8000 
     },
     { 
         text: "Nãy giờ nói cũng hơi nhiều, nhưng chúc thì cũng như mọi lần. Cầu mong cho bạn luôn được bình an và khỏe mạnh (à thì sức khỏe thôi chứ tiền tài học hành tự thân lo nhóe, ngắn gọn cho nó linh)", 
-        time: 6000 // 6 giây
+        time: 6000 
     },
     { 
         text: "Bonus: thật ra tụi mình ko có hình nào đẹp hết, nên mò trên trang cá nhân mới có hình", 
-        time: 5000 // 5 giây
+        time: 5000 
     },
     { 
         text: "<span class='highlight-hpbd'>Hết rồi đó. SINH NHỰT ZUI ZẺ NHE <3</span>", 
-        time: 4000 // 4 giây
+        time: 4000 
     },
     { 
         text: "<span class='highlight-sign'>maxinhdep</span>", 
-        time: 3000 // 3 giây
+        time: 3000 
     }
 ];
 
@@ -52,13 +56,12 @@ document.addEventListener('DOMContentLoaded', () => {
     phanthanSound = document.getElementById('sound-phanthan');
     cuoiSound = document.getElementById('sound-cuoi');
 
-    // --- MỚI: Load nội dung ghi chú đã lưu (nếu có) ---
+    // --- Load nội dung ghi chú đã lưu ---
     const savedNote = localStorage.getItem('userBirthdayNote');
     const noteArea = document.getElementById('persistent-note');
     if (savedNote) {
         noteArea.value = savedNote;
     }
-    // Lắng nghe sự kiện nhập liệu để lưu ngay lập tức
     noteArea.addEventListener('input', function() {
         localStorage.setItem('userBirthdayNote', this.value);
     });
@@ -78,19 +81,18 @@ function checkPass() {
         const clickMsg = document.getElementById('click-msg');
         
         startOverlay.style.display = 'flex';
-        
         nhacMaSound.volume = 0.8;
         nhacMaSound.play().catch(() => console.log("Audio interact needed"));
 
-        // --- MỚI: Logic hiển thị thông báo 8 giây ---
-        // Ban đầu đã hiện warningBox từ HTML
-        setTimeout(() => {
-            warningBox.style.display = 'none'; // Ẩn cảnh báo
-            clickMsg.style.display = 'block';  // Hiện dòng click
-        }, 8000); // 8000ms = 8 giây
+        // Hiện cảnh báo 8s
+        currentTimeout = setTimeout(() => {
+            warningBox.style.display = 'none'; 
+            clickMsg.style.display = 'block';  
+        }, 8000); 
 
+        // Click để bắt đầu (và bỏ qua 8s nếu chưa hết)
         startOverlay.addEventListener('click', () => {
-            // Chỉ cho phép click bắt đầu sau khi hiện dòng "Click vào màn hình..." hoặc user vẫn click sớm cũng đc
+            clearTimeout(currentTimeout); // Dừng chờ 8s
             startOverlay.style.display = 'none';
             runCountdown();
         });
@@ -100,25 +102,39 @@ function checkPass() {
 }
 
 function runCountdown() {
+    currentStage = 'COUNTDOWN';
     const countdownScreen = document.getElementById('countdown-screen');
     const numberEl = document.getElementById('countdown-number');
     const circleEl = document.getElementById('circle-effect');
     countdownScreen.style.display = 'flex';
     let count = 5;
 
+    // --- MỚI: Click để tua nhanh countdown ---
+    const skipCountdown = () => {
+        if (currentStage === 'COUNTDOWN') {
+            count = 0; // Đưa về 0 để hàm runTick xử lý chuyển cảnh
+        }
+    };
+    countdownScreen.addEventListener('click', skipCountdown);
+
     const runTick = () => {
         numberEl.textContent = count;
         circleEl.classList.remove('animate-reverse');
         void circleEl.offsetWidth; 
         setTimeout(() => { circleEl.classList.add('animate-reverse'); }, 10);
-        beepSound.currentTime = 0;
-        beepSound.play();
+        
+        if (count > 0) { // Chỉ kêu beep nếu chưa hết
+            beepSound.currentTime = 0;
+            beepSound.play();
+        }
+
         if (count === 0) {
-            setTimeout(runKageSequence, 1000);
+            countdownScreen.removeEventListener('click', skipCountdown);
+            setTimeout(runKageSequence, 500); // Giảm delay chút cho mượt
             return;
         }
         count--;
-        setTimeout(runTick, 1000);
+        currentTimeout = setTimeout(runTick, 1000);
     };
     runTick();
 }
@@ -136,6 +152,7 @@ function runKageSequence() {
 }
 
 function runGifSequence() {
+    currentStage = 'GIF1';
     const gif1Screen = document.getElementById('gif-screen');
     const videoEl = gif1Screen.querySelector('video');
     gif1Screen.style.display = 'flex';
@@ -143,7 +160,12 @@ function runGifSequence() {
     rasenSound.currentTime = 5; 
     rasenSound.play();
 
-    setTimeout(() => {
+    // Hàm chuyển cảnh
+    const finishGif1 = () => {
+        if (currentStage !== 'GIF1') return;
+        currentStage = 'TRANSITION'; // Khóa để không gọi 2 lần
+        clearTimeout(currentTimeout);
+        
         rasenSound.pause();
         if(videoEl) videoEl.pause();
         
@@ -156,11 +178,18 @@ function runGifSequence() {
             whiteFlash.style.opacity = '0';
             runGif2Sequence();
             setTimeout(() => { whiteFlash.style.display = 'none'; }, 1000);
-        }, 500); 
-    }, 5000);
+        }, 500);
+    };
+
+    // --- MỚI: Click để chuyển nhanh ---
+    gif1Screen.onclick = finishGif1;
+
+    // Mặc định chạy 5s
+    currentTimeout = setTimeout(finishGif1, 5000);
 }
 
 function runGif2Sequence() {
+    currentStage = 'GIF2';
     const gif2Screen = document.getElementById('gif2-screen');
     const textEl = document.getElementById('mockery-text');
     const queEl = document.getElementById('que-text');
@@ -170,13 +199,33 @@ function runGif2Sequence() {
 
     textEl.textContent = "Lêu lêu, đồ chưa có bồ";
     textEl.style.display = 'block';
+    
+    // Hàm kết thúc GIF 2 chuyển sang nội dung chính
+    const finishGif2 = () => {
+        if (currentStage !== 'GIF2') return;
+        currentStage = 'TRANSITION';
+        clearTimeout(currentTimeout);
+        clearInterval(currentInterval); // Xóa spam nếu đang chạy
+        
+        // Dọn dẹp DOM
+        const spams = document.querySelectorAll('.spam-item');
+        spams.forEach(el => el.remove());
+        
+        gif2Screen.style.display = 'none';
+        cuoiSound.pause();
+        showContentSequence();
+    };
 
-    setTimeout(() => {
+    // --- MỚI: Click để chuyển nhanh ---
+    gif2Screen.onclick = finishGif2;
+
+    // Logic cũ chạy tuần tự
+    currentTimeout = setTimeout(() => {
         textEl.textContent = "làm gì có anh nào mét 8 đâu";
-        setTimeout(() => {
+        currentTimeout = setTimeout(() => {
             textEl.style.display = 'none'; 
             let spamCount = 0;
-            let spamInterval = setInterval(() => {
+            currentInterval = setInterval(() => {
                 const spamItem = document.createElement('div');
                 spamItem.classList.add('spam-item');
                 spamItem.innerText = "lêu lêu";
@@ -185,20 +234,15 @@ function runGif2Sequence() {
                 spamItem.style.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
                 gif2Screen.appendChild(spamItem);
                 spamCount++;
-                if(spamCount > 30) clearInterval(spamInterval);
+                if(spamCount > 30) clearInterval(currentInterval);
             }, 100);
 
-            setTimeout(() => {
-                clearInterval(spamInterval);
+            currentTimeout = setTimeout(() => {
+                clearInterval(currentInterval);
                 const spams = document.querySelectorAll('.spam-item');
                 spams.forEach(el => el.remove());
                 queEl.style.display = 'block';
-                setTimeout(() => {
-                    queEl.style.display = 'none';
-                    gif2Screen.style.display = 'none';
-                    cuoiSound.pause();
-                    showContentSequence();
-                }, 3000);
+                currentTimeout = setTimeout(finishGif2, 3000); // Đợi chữ Quê 3s rồi chuyển
             }, 3000); 
         }, 2000); 
     }, 2000);
@@ -212,38 +256,33 @@ function showContentSequence() {
     const imgSection = document.querySelector('.image-section');
     const textSection = document.querySelector('.text-section');
 
-    // 1. Chỉ hiện nền hoa trong 2 giây
     setTimeout(() => {
-        // 2. Sau 2s, ảnh hiện dần ở giữa
         imgSection.classList.add('fade-in-center');
-
-        // 3. Sau khi ảnh hiện xong -> Trượt sang trái
         setTimeout(() => {
             imgSection.classList.add('move-left');
             textSection.classList.add('slide-in-right');
-
-            // 4. Bắt đầu hiện chữ
             setTimeout(() => {
                 runTextAnimation();
             }, 1600); 
         }, 2500); 
-
     }, 2000); 
 }
 
 function runTextAnimation() {
+    currentStage = 'TEXT_RUNNING';
     const container = document.getElementById('message-container');
+    const contentScreen = document.getElementById('content-screen');
     let lineIndex = 0;
 
+    // --- MỚI: Hàm xử lý hiển thị dòng tiếp theo ---
     function showNextLine() {
         if (lineIndex < messageLines.length) {
-            const currentLine = messageLines[lineIndex]; // Lấy object {text, time}
+            const currentLine = messageLines[lineIndex]; 
             
             const p = document.createElement('p');
-            p.innerHTML = currentLine.text; // Lấy nội dung chữ
+            p.innerHTML = currentLine.text; 
             container.appendChild(p);
             
-            // Auto Scroll
             container.scrollTo({
                 top: container.scrollHeight,
                 behavior: 'smooth'
@@ -251,44 +290,53 @@ function runTextAnimation() {
 
             setTimeout(() => { p.classList.add('show-text'); }, 50);
 
-            // Sử dụng thời gian đã cài đặt trong object
             const readingTime = currentLine.time;
 
             if (lineIndex === messageLines.length - 1) {
-                // KHI DÒNG CUỐI XUẤT HIỆN:
-                // 1. Bắn pháo hoa NGAY LẬP TỨC
+                // Dòng cuối
                 startFireworks(); 
-                
-                // 2. Đợi hết thời gian đọc dòng cuối rồi mới kết thúc
-                setTimeout(() => {
-                    endSequence();
-                }, readingTime); 
+                currentTimeout = setTimeout(endSequence, readingTime); 
             } else {
                 lineIndex++;
-                setTimeout(showNextLine, readingTime);
+                // Chờ readingTime giây rồi gọi dòng tiếp
+                currentTimeout = setTimeout(showNextLine, readingTime);
             }
         }
     }
+
+    // --- MỚI: Click để tua nhanh từng dòng text ---
+    contentScreen.addEventListener('click', () => {
+        if (currentStage === 'TEXT_RUNNING') {
+            // Nếu đang chờ dòng tiếp theo, hủy chờ và hiện ngay
+            clearTimeout(currentTimeout);
+            
+            // Nếu đã hết dòng thì thôi
+            if (lineIndex >= messageLines.length && lineIndex > 0) {
+                 // Đã ở dòng cuối, click sẽ kết thúc luôn (nếu đang chờ endSequence)
+                 endSequence();
+            } else {
+                 // Hiện ngay dòng tiếp theo
+                 showNextLine();
+            }
+        }
+    });
+
     showNextLine();
 }
 
 function endSequence() {
+    currentStage = 'FINISHED';
     const textSection = document.querySelector('.text-section');
     const imgSection = document.querySelector('.image-section');
     const noteContainer = document.getElementById('final-note-container');
 
-    // 1. Mờ chữ trước
     textSection.classList.add('fade-out');
 
-    // 2. Đợi một chút (1.5s) để chữ mờ đi, sau đó ảnh mới trượt về giữa
     setTimeout(() => {
         imgSection.classList.remove('move-left'); 
-        
-        // --- MỚI: Hiện khung ghi chú sau khi ảnh đã về giữa ---
         setTimeout(() => {
             noteContainer.style.display = 'block';
         }, 1500);
-
     }, 1500);
 }
 
@@ -316,12 +364,9 @@ function startFireworks() {
 
     function animate() {
         requestAnimationFrame(animate);
-        
-        // Dùng destination-out để xóa nền (giữ trong suốt)
         ctx.globalCompositeOperation = 'destination-out';
         ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
         ctx.globalCompositeOperation = 'source-over';
 
         particles.forEach((p, index) => {
@@ -337,7 +382,6 @@ function startFireworks() {
             createParticle(Math.random() * canvas.width, Math.random() * canvas.height * 0.5); 
         }
     }
-    
     animate();
     createParticle(canvas.width / 2, canvas.height / 3);
 }
